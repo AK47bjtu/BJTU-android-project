@@ -1237,10 +1237,12 @@ containing a value of this type.
         public static final int fragment_main=0x7f03001c;
         public static final int fragment_navigation_drawer=0x7f03001d;
         public static final int fragment_record_list=0x7f03001e;
-        public static final int listitem=0x7f03001f;
-        public static final int listview_button_row=0x7f030020;
-        public static final int listview_detail_row=0x7f030021;
-        public static final int support_simple_spinner_dropdown_item=0x7f030022;
+        public static final int fragment_record_list_edit=0x7f03001f;
+        public static final int listitem=0x7f030020;
+        public static final int listitem_edit=0x7f030021;
+        public static final int listview_button_row=0x7f030022;
+        public static final int listview_detail_row=0x7f030023;
+        public static final int support_simple_spinner_dropdown_item=0x7f030024;
     }
     public static final class menu {
         public static final int global=0x7f0c0000;
