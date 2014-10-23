@@ -1,8 +1,7 @@
 #################
 ## Eclipse
 ################
-bin/
-src/ChinaRecorder/bin/
+
 *.pydevproject
 .project
 .metadata
