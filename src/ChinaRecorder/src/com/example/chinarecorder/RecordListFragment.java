@@ -200,7 +200,7 @@ public class RecordListFragment extends ListFragment{
 			holder.pic.setBackgroundResource(R.drawable.app_pic_net_people);
 			holder.name.setText(recordings.get(position).getRname());
 			holder.time.setText(recordings.get(position).getRdate().toString());
-			holder.viewBtn.setBackgroundResource(R.drawable.main_addressbar_access);
+			holder.viewBtn.setBackgroundResource(R.drawable.button_show_record_detail);
 			holder.viewBtn.setTag(position); 
 			holder.viewBtn.setOnClickListener(new View.OnClickListener() {
 				/**

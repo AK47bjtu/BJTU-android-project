@@ -4,5 +4,57 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
+    <LinearLayout
+	     android:layout_width="fill_parent"
+	     android:layout_height="wrap_content"
+	     android:orientation="horizontal" 
+	     android:descendantFocusability="blocksDescendants">
+	      <ImageView 
+	          android:id="@+id/list_edit.pic"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_margin="5px"
+	          android:layout_gravity="center_vertical"
+	          android:scaleType="fitXY" 
+	          android:maxWidth="100px"
+	          android:maxHeight="100px"
+	          />"
+	      <LinearLayout 
+	           android:layout_width="wrap_content"
+		       android:layout_height="wrap_content"
+		       android:orientation="vertical"
+		       >
+	          	<TextView
+			         android:id="@+id/list.name_edit"
+			         android:layout_width="wrap_content"
+			         android:layout_height="wrap_content"
+			         android:layout_weight="1"
+			         android:text="Name"
+			         android:layout_gravity="center"
+			         android:textSize="48px"
+			         />
+			     <TextView
+			         android:id="@+id/list.time_edit"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content"
+			         android:layout_weight="1"
+			         android:text="Time"
+			         android:layout_gravity="center"
+			         android:textSize="33px"/> 
+      </LinearLayout>
+      <LinearLayout  
+        android:layout_width="fill_parent"  
+        android:layout_height="wrap_content"  
+        android:gravity="right"
+        android:layout_gravity="center_vertical" 
+        >  
+  		<CheckBox
+         android:id="@+id/list.select_edit"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginRight="10px"/>
+      </LinearLayout>
+      
+  </LinearLayout>
 
 </LinearLayout>
