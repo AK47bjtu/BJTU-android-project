@@ -2,6 +2,7 @@
 ## Eclipse
 ################
 bin/
+src/ChinaRecorder/bin/
 *.pydevproject
 .project
 .metadata
@@ -214,3 +215,4 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+src/ChinaRecorder/bin/classes/com/example/chinarecorder/PlayActivity.class
