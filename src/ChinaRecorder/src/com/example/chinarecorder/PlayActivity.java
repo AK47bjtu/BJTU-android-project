@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * 播放界面
+ * */
 public class PlayActivity extends ActionBarActivity {
 	
 	Recording recording;
