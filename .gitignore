@@ -216,3 +216,6 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 src/ChinaRecorder/bin/classes/com/example/chinarecorder/PlayActivity.class
+src/ChinaRecorder/bin/ChinaRecorder.apk
+src/ChinaRecorder/bin/classes.dex
+src/ChinaRecorder/bin/classes/com/example/chinarecorder/PlayActivity.class
