@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.chinarecorder.RecordListActivity" 
+    >
+    
+ 	<!--  item 
+        android:id="@+id/title2"
+        android:title="@string/title_record"
+        android:enabled="true"
+        android:actionLayout="@layout/title_text"
+        app:showAsAction="always"
+        -->
+ 	
+</menu>

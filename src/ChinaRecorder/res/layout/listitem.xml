@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <LinearLayout
+	     android:layout_width="fill_parent"
+	     android:layout_height="wrap_content"
+	     android:orientation="horizontal" 
+	     android:descendantFocusability="blocksDescendants">
+	      <ImageView 
+	          android:id="@+id/list.pic"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_margin="5px"
+	          android:layout_gravity="center_vertical"
+	          android:scaleType="fitXY" 
+	          android:maxWidth="100px"
+	          android:maxHeight="100px"
+	          />"
+	      <LinearLayout 
+	           android:layout_width="wrap_content"
+		       android:layout_height="wrap_content"
+		       android:orientation="vertical"
+		       >
+	          	<TextView
+			         android:id="@+id/list.name"
+			         android:layout_width="wrap_content"
+			         android:layout_height="wrap_content"
+			         android:layout_weight="1"
+			         android:text="Name"
+			         android:layout_gravity="center"
+			         android:textSize="48px"
+			         />
+			     <TextView
+			         android:id="@+id/list.time"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content"
+			         android:layout_weight="1"
+			         android:text="Time"
+			         android:layout_gravity="center"
+			         android:textSize="33px"/> 
+      </LinearLayout>
+      <LinearLayout  
+        android:layout_width="fill_parent"  
+        android:layout_height="wrap_content"  
+        android:gravity="right"
+        android:layout_gravity="center_vertical" 
+        >  
+  		<ImageButton 
+	          android:id="@+id/list.viewbtn"
+		      android:layout_width="wrap_content"
+		      android:layout_height="wrap_content"
+		      android:text="imgbtn"
+		      android:layout_marginRight="10px"
+	      />
+      </LinearLayout>
+      
+  </LinearLayout>
+    
+
+</LinearLayout>
