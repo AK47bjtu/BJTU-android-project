@@ -1,14 +1,34 @@
 package com.example.chinarecorder;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class RecordListActivity extends ActionBarActivity {
+public class RecordListActivity extends ActionBarActivity 
+	implements RecordListFragment.OnRecordListEditListener{
 
+	public static int BACKTOLIST = 0;
+	public static int GOTOSHARE = 1;
+	public static int GOTODELETE = 2;
+	
+	
+	@Override
+	public void onEditSelected(int position) {
+		RecordListEditFragment recordListEditFragment = new RecordListEditFragment();
+		Bundle args = new Bundle();
+		args.putInt(RecordListEditFragment.ARG_EDIT, position);
+		recordListEditFragment.setArguments(args);
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.container, recordListEditFragment);
+		transaction.commit();
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,6 +59,8 @@ public class RecordListActivity extends ActionBarActivity {
 //		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	
 	
 //	public void myGetItem2(int id) {
 //		Toast.makeText(this, "myitem", Toast.LENGTH_SHORT)

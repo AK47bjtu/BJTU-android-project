@@ -7,7 +7,7 @@
     
     <LinearLayout 
      android:layout_width="fill_parent"
-     android:layout_height="wrap_content"
+     android:layout_height="fill_parent"
     
      android:paddingLeft="@dimen/activity_horizontal_margin"
      android:paddingRight="@dimen/activity_horizontal_margin"
@@ -16,7 +16,7 @@
         <ListView
             android:id="@+id/android:list"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             tools:layout="@layout/listitem_edit"
              >
         </ListView>
@@ -30,15 +30,15 @@
      style="@android:style/ButtonBar"
      android:descendantFocusability="blocksDescendants">
        <Button
-	       android:id="@+id/cancel"
+	       android:id="@+id/cancel_list_edit"
 	       android:layout_width="wrap_content"
-	       android:layout_height="fill_parent"
+	       android:layout_height="wrap_content"
 	       android:layout_weight="1"
 	       android:text="@string/cancel"/>
        <Button
 	       android:id="@+id/delete_list_edit"
 	       android:layout_width="wrap_content"
-	       android:layout_height="fill_parent"
+	       android:layout_height="wrap_content"
 	       android:layout_weight="1"
 	       android:text="@string/delete"/>
    </LinearLayout>

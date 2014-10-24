@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_record_list"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
@@ -8,7 +9,7 @@
      
     <LinearLayout 
      android:layout_width="fill_parent"
-     android:layout_height="wrap_content"
+     android:layout_height="fill_parent"
     
      android:paddingLeft="@dimen/activity_horizontal_margin"
      android:paddingRight="@dimen/activity_horizontal_margin"
@@ -27,21 +28,39 @@
      android:layout_width="fill_parent"
      android:layout_height="fill_parent"
      android:layout_weight="9"
-     android:padding="0px"
-     style="@android:style/ButtonBar"
+     android:orientation="horizontal"
+     android:background="@android:drawable/bottom_bar"
      android:descendantFocusability="blocksDescendants">
-       <Button
-	       android:id="@+id/share"
-	       android:layout_width="wrap_content"
-	       android:layout_height="fill_parent"
-	       android:layout_weight="1"
-	       android:text="@string/share"/>
-       <Button
-	       android:id="@+id/delete_list"
-	       android:layout_width="wrap_content"
-	       android:layout_height="fill_parent"
-	       android:layout_weight="1"
+        <LinearLayout 
+             android:layout_width="fill_parent"
+     		 android:layout_height="fill_parent"
+     		 android:layout_weight="1"
+     		 android:gravity="left"
+     		>
+	        <ImageButton
+		       android:id="@+id/share"
+		       android:layout_width="wrap_content"
+		       android:layout_height="wrap_content"
+		       android:layout_gravity="center_vertical"
+		       android:scaleType="fitXY"
+		       android:src="@drawable/ic_menu_share_holo_light"
+		       android:text="@string/share"/>
+        </LinearLayout>
+        <LinearLayout 
+             android:layout_width="fill_parent"
+     		 android:layout_height="fill_parent"
+     		 android:layout_weight="1"
+     		 android:gravity="right"
+     		>
+	       <ImageButton
+		       android:id="@+id/delete_list"
+		       android:layout_width="wrap_content"
+		       android:layout_height="wrap_content"
+		       android:scaleType="fitXY"
+		       android:layout_gravity="center_vertical"
+		       android:src="@drawable/ic_menu_delete_holo_dark"
 	       android:text="@string/delete"/>
+       </LinearLayout>
    </LinearLayout>
 </LinearLayout>
 

@@ -13,11 +13,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,8 +31,22 @@ public class RecordListFragment extends ListFragment{
 	 final static String ARG_POSITION = "position";
 	 public static List<Recording> recordings = new ArrayList<Recording>();
 	 Context mContext;
+	 ImageButton editShare,editDelete;
 	 private ListView lv ;
 	 RecoderAdapter adapter;
+	 
+	 OnRecordListEditListener recordEditJump;
+	 /**
+	  * 定义选择跳转的编辑Fragment接口
+	  * */
+	 public interface OnRecordListEditListener{
+		 /**
+		  * 选择跳转的编辑Fragment接口方法
+		  * */
+		 public void onEditSelected(int position);
+	 }
+	 
+	 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -38,9 +55,36 @@ public class RecordListFragment extends ListFragment{
 		View view = inflater.inflate(
 				R.layout.fragment_record_list, container, false);
 //		 lv = (ListView) view.findViewById(R.id.lvrecord);
+		editShare = (ImageButton) view.findViewById(R.id.share);
+		editShare.setOnClickListener(new View.OnClickListener() {
+            /**
+             * 点击button事件
+             * */
+            @Override
+            public void onClick(View v) {
+            	Toast.makeText(mContext, "分享", Toast.LENGTH_SHORT)
+    			.show();
+            }
+            
+		});
+		
+		editDelete = (ImageButton) view.findViewById(R.id.delete_list);
+		editDelete.setOnClickListener(new View.OnClickListener() {
+            /**
+             * 点击button事件：退回前一Fregment
+             * */
+            @Override
+            public void onClick(View v) {
+            	changeListEditFragment();
+            }
+            
+		});
  		return view;
 	}
-	
+	public void changeListEditFragment(){
+		recordEditJump.onEditSelected(RecordListActivity.GOTODELETE);
+		
+	}
 	
 	
 	@Override
@@ -60,12 +104,21 @@ public class RecordListFragment extends ListFragment{
    
 
 
-//	@Override
-//	public void onAttach(Activity activity) {
-//		super.onAttach(activity);
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		
+		try {  
+			recordEditJump = (OnRecordListEditListener) activity;  
+        } catch (ClassCastException e) {  
+            throw new ClassCastException(activity.toString()  
+                    + " must implement OnRecordListEditListener");  
+        } 
+		
 //		((RecordListActivity) activity).myGetItem2(getArguments().getInt(
 //				"aa"));
-//	}
+	}
 
 
 
@@ -201,7 +254,7 @@ public class RecordListFragment extends ListFragment{
 			holder.name.setText(recordings.get(position).getRname());
 			holder.time.setText(recordings.get(position).getRdate().toString());
 			holder.viewBtn.setBackgroundResource(R.drawable.button_show_record_detail);
-			holder.viewBtn.setTag(position); 
+			holder.viewBtn.setTag(position);  
 			holder.viewBtn.setOnClickListener(new View.OnClickListener() {
 				/**
 				 * 自定义按钮事件
