@@ -8,9 +8,33 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.chinarecorder.MainActivity$PlaceholderFragment" >
 
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+   <Chronometer
+       android:id="@+id/chronometer"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_above="@+id/stop"
+       android:textSize="50px"
+       android:layout_centerHorizontal="true"
+       android:layout_marginBottom="56dp" />
+
+   <Button
+       android:id="@+id/start"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_alignParentBottom="true"
+       android:layout_marginBottom="181dp"
+       android:layout_marginRight="21dp"
+       android:layout_toLeftOf="@+id/chronometer"
+       android:text="@string/start" />
+
+   <Button
+       android:id="@+id/stop"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_alignBaseline="@+id/start"
+       android:layout_alignBottom="@+id/start"
+       android:layout_marginLeft="25dp"
+       android:layout_toRightOf="@+id/chronometer"
+       android:text="停止" />
 
 </RelativeLayout>

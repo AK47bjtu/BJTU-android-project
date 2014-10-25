@@ -1,9 +1,9 @@
 package com.example.chinarecorder;
 
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,15 +17,18 @@ public class RecordListActivity extends ActionBarActivity
 	public static int GOTOSHARE = 1;
 	public static int GOTODELETE = 2;
 	
+	private CharSequence rTitle;
 	
 	@Override
 	public void onEditSelected(int position) {
+		onSectionAttached(position);
 		RecordListEditFragment recordListEditFragment = new RecordListEditFragment();
 		Bundle args = new Bundle();
 		args.putInt(RecordListEditFragment.ARG_EDIT, position);
 		recordListEditFragment.setArguments(args);
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.container, recordListEditFragment);
+	    transaction.addToBackStack(null); 
 		transaction.commit();
 	}
 	
@@ -37,17 +40,39 @@ public class RecordListActivity extends ActionBarActivity
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, new RecordListFragment()).commit();
 		}
+		rTitle = getTitle();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.record_list, menu);
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayShowTitleEnabled(true);//是否显示标题（是/否）
+//		restoreActionBar();
 		return true;
 	}
-
+	private void restoreActionBar() {
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayShowTitleEnabled(true);//是否显示标题（是/否）
+		actionBar.setTitle(rTitle);
+	}
+	
+	public void onSectionAttached(int number) {
+		switch (number) {
+		case 1:
+			rTitle = getString(R.string.share);
+			break;
+		case 2:
+			rTitle = getString(R.string.delete);
+			break;
+		case 0:
+			rTitle = getString(R.string.title_record);
+		break;
+		}
+		restoreActionBar();
+	}
+	
+	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will

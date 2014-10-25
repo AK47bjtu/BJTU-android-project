@@ -1,15 +1,19 @@
 package com.example.chinarecorder;
 
+import java.io.ObjectOutputStream.PutField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import com.example.bean.Recording;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,15 +38,21 @@ public class RecordListEditFragment extends ListFragment{
 	 RecoderEditAdapter adapter;
 	 List<Integer> listItemID = new ArrayList<Integer>();
 	 
+	 int position = -1;
+	 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		
+		position = getArguments().getInt(ARG_EDIT);//获得显示状态（分享、删除）
+//		System.out.println("ARG_EDIT"+ position);
 		mContext = getActivity().getApplicationContext();
 		View view = inflater.inflate(
 				R.layout.fragment_record_list_edit, container, false);
 //		 lv = (ListView) view.findViewById(R.id.lvrecord);
 		editSure = (Button) view.findViewById(R.id.delete_list_edit);
+		if (position == 1) {
+			editSure.setText(R.string.share);
+		}
 		editSure.setOnClickListener(new View.OnClickListener() {
             /**
              * 点击button事件：获取选中checkbooksID并响应
@@ -61,7 +71,8 @@ public class RecordListEditFragment extends ListFragment{
              * */
             @Override
             public void onClick(View v) {
-            	
+            	getFragmentManager().popBackStack();
+//            	((RecordListActivity) activity).restoreActionBar();
             }
             
 		});
@@ -80,7 +91,7 @@ public class RecordListEditFragment extends ListFragment{
           
          if(listItemID.size()==0){
              AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-             builder1.setMessage("没有选中任何记录");
+             builder1.setMessage("没有选中任何要记录");
              builder1.show();
          }else{
              StringBuilder sb = new StringBuilder();
@@ -111,12 +122,36 @@ public class RecordListEditFragment extends ListFragment{
   
 
 
-//	@Override
-//	public void onAttach(Activity activity) {
-//		super.onAttach(activity);
+	/**
+	 *当调用popBackStack()方法返回时，先调用onPause()方法，再调用onDestroyView()方法
+	 * */
+	@Override
+	public void onPause() {
+		System.out.println("pause");
+		
+		super.onPause();
+	}
+
+	/**
+	 *当调用popBackStack()方法返回时，先调用onPause()方法，再调用onDestroyView()方法
+	 * */
+	@Override
+	public void onDestroyView() {
+		System.out.println("onDestroyView");
+		Activity act = getActivity();
+		((RecordListActivity)act).onSectionAttached(RecordListActivity.BACKTOLIST);
+		super.onDestroyView();
+	}
+
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		((RecordListActivity) activity).onSectionAttached(position);
+		
 //		((RecordListActivity) activity).myGetItem2(getArguments().getInt(
 //				"aa"));
-//	}
+	}
 
 
 

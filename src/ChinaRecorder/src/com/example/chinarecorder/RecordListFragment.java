@@ -58,12 +58,13 @@ public class RecordListFragment extends ListFragment{
 		editShare = (ImageButton) view.findViewById(R.id.share);
 		editShare.setOnClickListener(new View.OnClickListener() {
             /**
-             * 点击button事件
+             * 点击button事件：跳转到“分享”模式的fragment
              * */
             @Override
             public void onClick(View v) {
-            	Toast.makeText(mContext, "分享", Toast.LENGTH_SHORT)
-    			.show();
+//            	Toast.makeText(mContext, "分享", Toast.LENGTH_SHORT)
+//    			.show();
+            	changeListEditFragment(RecordListActivity.GOTOSHARE);
             }
             
 		});
@@ -71,19 +72,18 @@ public class RecordListFragment extends ListFragment{
 		editDelete = (ImageButton) view.findViewById(R.id.delete_list);
 		editDelete.setOnClickListener(new View.OnClickListener() {
             /**
-             * 点击button事件：退回前一Fregment
+             * 点击button事件：跳转到“删除”模式的fragment
              * */
             @Override
             public void onClick(View v) {
-            	changeListEditFragment();
+            	changeListEditFragment(RecordListActivity.GOTODELETE);
             }
             
 		});
  		return view;
 	}
-	public void changeListEditFragment(){
-		recordEditJump.onEditSelected(RecordListActivity.GOTODELETE);
-		
+	public void changeListEditFragment(int state){
+		recordEditJump.onEditSelected(state);
 	}
 	
 	
@@ -115,6 +115,7 @@ public class RecordListFragment extends ListFragment{
             throw new ClassCastException(activity.toString()  
                     + " must implement OnRecordListEditListener");  
         } 
+		
 		
 //		((RecordListActivity) activity).myGetItem2(getArguments().getInt(
 //				"aa"));

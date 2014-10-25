@@ -1,27 +1,37 @@
 package com.example.chinarecorder;
 
+import java.io.IOException;
+import java.util.Date;
+
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
 	 */
+	public static String basePath = "/sdcard/chinarecord/";
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 
 	/**
@@ -129,6 +139,11 @@ public class MainActivity extends ActionBarActivity implements
 		 */
 		private static final String ARG_SECTION_NUMBER = "section_number";
 
+		private String fileName;
+		private Button button_start;
+		private Button button_stop;
+		private MediaRecorder recorder;
+		private Chronometer  chronometer;
 		/**
 		 * Returns a new instance of this fragment for the given section number.
 		 */
@@ -148,9 +163,71 @@ public class MainActivity extends ActionBarActivity implements
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
+//			getWindow().setFormat(PixelFormat.TRANSLUCENT);// 让界面横屏
+//			requestWindowFeature(Window.FEATURE_NO_TITLE);// 去掉界面标题
+			getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+					WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			// 重新设置界面大小
+			init();
+			
 			return rootView;
 		}
+		
+		private void init() {
+			
+//			chronometer =(Chronometer)getActivity().findViewById(R.id.chronometer);
+//			button_start = (Button) getActivity().findViewById(R.id.start);
+//			button_stop = (Button) getActivity().findViewById(R.id.stop);
+//			button_stop.setOnClickListener(new AudioListerner());
+//			button_start.setOnClickListener(new AudioListerner());
+		}
 
+		class AudioListerner implements OnClickListener {
+			@Override
+			public void onClick(View v) {
+				if (v == button_start) {
+					initializeAudio();
+					chronometer.setBase(SystemClock.elapsedRealtime());
+					chronometer.start();
+				}
+				if (v == button_stop) {
+					System.out.println((new Date()).toString());
+					fileName = "test ";
+					
+					recorder.stop();// 停止刻录
+//					chronometer.stop();
+					chronometer.setBase(SystemClock.elapsedRealtime());
+					chronometer.stop();
+					
+					// recorder.reset(); // 重新启动MediaRecorder.
+					recorder.release(); // 刻录完成一定要释放资源
+					// recorder = null;
+				}
+			}
+
+			private void initializeAudio() {
+				recorder = new MediaRecorder();// new出MediaRecorder对象
+				recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+				// 设置MediaRecorder的音频源为麦克风
+				recorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
+				// 设置MediaRecorder录制的音频格式
+				recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+				// 设置MediaRecorder录制音频的编码为amr.
+//				recorder.setOutputFile("/sdcard/peipei.amr");
+				recorder.setOutputFile(basePath+fileName+".amr");
+				// 设置录制好的音频文件保存路径
+				try {
+					recorder.prepare();// 准备录制
+					recorder.start();// 开始录制
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+		
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
