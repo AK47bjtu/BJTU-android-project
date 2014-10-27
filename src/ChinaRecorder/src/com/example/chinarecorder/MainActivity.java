@@ -1,6 +1,9 @@
 package com.example.chinarecorder;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
@@ -31,7 +34,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
 	 */
-	public static String basePath = "/sdcard/chinarecord/";
+	public static String basePath = "/sdcard/chinarecord";
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 
 	/**
@@ -168,18 +171,18 @@ public class MainActivity extends ActionBarActivity implements
 			getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			// 重新设置界面大小
-			init();
+			init(rootView);
 			
 			return rootView;
 		}
 		
-		private void init() {
+		private void init(View v) {
 			
-//			chronometer =(Chronometer)getActivity().findViewById(R.id.chronometer);
-//			button_start = (Button) getActivity().findViewById(R.id.start);
-//			button_stop = (Button) getActivity().findViewById(R.id.stop);
-//			button_stop.setOnClickListener(new AudioListerner());
-//			button_start.setOnClickListener(new AudioListerner());
+			chronometer =(Chronometer)v.findViewById(R.id.chronometer);
+			button_start = (Button)v.findViewById(R.id.start);
+			button_stop = (Button)v.findViewById(R.id.stop);
+			button_stop.setOnClickListener(new AudioListerner());
+			button_start.setOnClickListener(new AudioListerner());
 		}
 
 		class AudioListerner implements OnClickListener {
@@ -191,8 +194,7 @@ public class MainActivity extends ActionBarActivity implements
 					chronometer.start();
 				}
 				if (v == button_stop) {
-					System.out.println((new Date()).toString());
-					fileName = "test ";
+//					System.out.println("date:"+getDateYYMMDD());
 					
 					recorder.stop();// 停止刻录
 //					chronometer.stop();
@@ -214,7 +216,9 @@ public class MainActivity extends ActionBarActivity implements
 				recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 				// 设置MediaRecorder录制音频的编码为amr.
 //				recorder.setOutputFile("/sdcard/peipei.amr");
-				recorder.setOutputFile(basePath+fileName+".amr");
+				isExist(basePath);
+				setFileName();
+				recorder.setOutputFile(basePath+"/"+fileName+".amr");
 				// 设置录制好的音频文件保存路径
 				try {
 					recorder.prepare();// 准备录制
@@ -226,6 +230,33 @@ public class MainActivity extends ActionBarActivity implements
 				}
 
 			}
+
+			private void setFileName() {
+				String date = getDateYYMMDD();
+				String newName;
+				if(true){
+					String old = "20141025_011";
+					 newName = date+"_"+String.format("%1$,03d", Integer.valueOf(old.substring(9))+1);
+//					System.out.println("name:"+newName);
+				}else {
+					newName = date+"_001";
+				}
+				fileName = newName;
+			}
+		}
+		
+		public static void isExist(String path) {
+			File file = new File(path);
+			//判断文件夹是否存在,如果不存在则创建文件夹
+			if (!file.exists()) {
+			file.mkdir();
+			}
+		}
+		
+		public String getDateYYMMDD() {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd");  
+			String date=sdf.format(new Date());
+			return date;
 		}
 		
 		@Override
