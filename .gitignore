@@ -1,6 +1,8 @@
 #################
 ## Eclipse
 ################
+
+bin/
 src/ChinaRecorder/bin/
 *.class
 *.pydevproject
