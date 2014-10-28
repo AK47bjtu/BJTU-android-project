@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -36,7 +37,7 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	public static String basePath = "/sdcard/chinarecord";
 	private NavigationDrawerFragment mNavigationDrawerFragment;
-
+	
 	/**
 	 * Used to store the last screen title. For use in
 	 * {@link #restoreActionBar()}.
@@ -141,7 +142,13 @@ public class MainActivity extends ActionBarActivity implements
 		 * fragment.
 		 */
 		private static final String ARG_SECTION_NUMBER = "section_number";
-
+		//定义SharedPreferences对象  
+	    SharedPreferences sp;  
+	    //定义Preferences 文件中的键  
+	    public final String LATEST_DATE_KEY = "LATEST_DATE";
+	    public final String LATEST_NO_KEY = "LATEST_DATE_KEY";
+		
+		
 		private String fileName;
 		private Button button_start;
 		private Button button_stop;
@@ -203,6 +210,7 @@ public class MainActivity extends ActionBarActivity implements
 					
 					// recorder.reset(); // 重新启动MediaRecorder.
 					recorder.release(); // 刻录完成一定要释放资源
+					saveLatestData(fileName);
 					// recorder = null;
 				}
 			}
@@ -234,8 +242,9 @@ public class MainActivity extends ActionBarActivity implements
 			private void setFileName() {
 				String date = getDateYYMMDD();
 				String newName;
-				if(true){
-					String old = "20141025_011";
+				if(isOldDate(date)){
+
+					 String old = getLatestData();
 					 newName = date+"_"+String.format("%1$,03d", Integer.valueOf(old.substring(9))+1);
 //					System.out.println("name:"+newName);
 				}else {
@@ -243,7 +252,61 @@ public class MainActivity extends ActionBarActivity implements
 				}
 				fileName = newName;
 			}
+			
+			private void saveLatestData(String filename){
+				String date = filename.substring(0,8);
+				int no = Integer.valueOf(filename.substring(9));
+				SharedPreferences.Editor editor = sp.edit();  
+		        //修改数据  
+		        editor.putString(LATEST_DATE_KEY, date);
+		        editor.putInt(LATEST_NO_KEY, no);
+		        editor.commit();
+			}
+			private Boolean isOldDate(String date){
+				sp = getActivity().getPreferences(MODE_PRIVATE);  
+		        String oldDate = sp.getString(LATEST_DATE_KEY, null);
+//		        System.out.println("+++++++++++++++date:"+oldDate);
+		        if(date.equals(oldDate)){
+		        	return true;
+		        }else {
+		        	return false;
+				}
+			}
+			private String getLatestData(){
+				sp = getActivity().getPreferences(MODE_PRIVATE);  
+		        String date = sp.getString(LATEST_DATE_KEY, null);
+		        int no = sp.getInt(LATEST_NO_KEY, 0);
+		        return date+"_"+no;
+			}
+			
 		}
+		
+//		private String[] findFile (File file, String keyword)   
+//	    {   
+//	        String res = "";   
+//	        if (!file.isDirectory())   
+//	        {   
+//	            res = "不是目录";   
+//	            return res;    
+//	        }   
+//	        File[] files = new File(file.getPath()).listFiles();   
+//	           
+//	        for (File f : files)   
+//	        {   
+//	            if (f.getName().indexOf(keyword) >= 0)   
+//	            {   
+//	                res += f.getPath() + "\n";   
+//	            }   
+//	        }       
+//	  
+//	          if (res.equals(""))   
+//	        {   
+//	            res = "没有找到相关文件";   
+//	        }   
+//	             
+//	        return res;   
+//	               
+//	    }   
 		
 		public static void isExist(String path) {
 			File file = new File(path);
