@@ -232,3 +232,7 @@ src/appcompat_v7Project/gen/android/support/v7/appcompat/R.java
 src/ChinaRecorder/gen/android/support/v7/appcompat/R.java
 
 src/ChinaRecorder/gen/com/example/chinarecorder/R.java
+
+src/appcompat_v7Project/bin/appcompat_v7project.jar
+
+*.class
