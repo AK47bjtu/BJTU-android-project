@@ -1,10 +1,18 @@
 package com.example.chinarecorder;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+
+
+
 
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +24,7 @@ import android.content.SharedPreferences;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -141,6 +150,19 @@ public class MainActivity extends ActionBarActivity implements
 		 * The fragment argument representing the section number for this
 		 * fragment.
 		 */
+		/**是否暂停标志位**/  
+	    private static boolean isPause;  
+	      
+	    /**在暂停状态中**/  
+	    private static boolean inThePause;
+	    /**是否停止录音**/  
+	    private static boolean isStopRecord;
+	    
+	    /**记录需要合成的几段amr语音文件**/  
+	    private static ArrayList<String> list; 
+	    
+	    /**临时文件计数**/
+		private static  int tempNO;
 		private static final String ARG_SECTION_NUMBER = "section_number";
 		//定义SharedPreferences对象  
 	    SharedPreferences sp;  
@@ -149,11 +171,25 @@ public class MainActivity extends ActionBarActivity implements
 	    public final String LATEST_NO_KEY = "LATEST_DATE_KEY";
 		
 		
-		private String fileName;
+//		private String fileName;
 		private Button button_start;
 		private Button button_stop;
 		private MediaRecorder recorder;
 		private Chronometer  chronometer;
+		private Button buttonpause;
+		
+		/**记录暂停时的时刻**/ 
+		private static long tempClock = 0;
+		private static long tempStartClock = 0;
+		private static long tempRestartClock = 0;
+						
+		private static File myRecAudioFile;
+		private boolean xx=true;  
+		private boolean sigle = false;  
+	    //定义Preferences 文件中的键  
+	
+		private static String recordFileName;
+		private static String tempFileName;
 		/**
 		 * Returns a new instance of this fragment for the given section number.
 		 */
@@ -179,42 +215,170 @@ public class MainActivity extends ActionBarActivity implements
 					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			// 重新设置界面大小
 			init(rootView);
-			
+			buttonpause.setEnabled(false);
+			button_stop.setEnabled(false);
 			return rootView;
 		}
 		
 		private void init(View v) {
 			
+			 //暂停标志位 为false  
+	        isPause=false;  
+	        //暂停状态标志位  
+	        inThePause=false; 
+			//初始化list  
+	        list=new ArrayList<String>(); 
+	        
 			chronometer =(Chronometer)v.findViewById(R.id.chronometer);
 			button_start = (Button)v.findViewById(R.id.start);
 			button_stop = (Button)v.findViewById(R.id.stop);
 			button_stop.setOnClickListener(new AudioListerner());
 			button_start.setOnClickListener(new AudioListerner());
+			buttonpause = (Button)v.findViewById(R.id.buttonpause);
+			buttonpause.setOnClickListener(new  AudioListerner()); 
 		}
 
 		class AudioListerner implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				if (v == button_start) {
+					tempNO = 0;
+					tempClock = 0;
+	                tempStartClock = 0;
+	                tempRestartClock = 0;
 					initializeAudio();
 					chronometer.setBase(SystemClock.elapsedRealtime());
 					chronometer.start();
-				}
-				if (v == button_stop) {
-//					System.out.println("date:"+getDateYYMMDD());
+					tempStartClock = chronometer.getBase();
+//					System.out.println("StartClock:"+tempStartClock/1000);
+					buttonpause.setEnabled(true);
+					button_stop.setEnabled(true);
+					button_start.setEnabled(false);
+					isStopRecord = false;
 					
-					recorder.stop();// 停止刻录
-//					chronometer.stop();
-					chronometer.setBase(SystemClock.elapsedRealtime());
-					chronometer.stop();
+				}else if (v == button_stop) {
 					
-					// recorder.reset(); // 重新启动MediaRecorder.
-					recorder.release(); // 刻录完成一定要释放资源
-					saveLatestData(fileName);
-					// recorder = null;
+					setFileName();
+					xx=false;  
+	                sigle = true;  
+	                
+	                // TODO Auto-generated method stub  
+	                chronometer.setBase(SystemClock.elapsedRealtime());
+	    			chronometer.stop();
+	    			
+	    			button_start.setEnabled(true);
+	    			button_stop.setEnabled(false);
+	    			buttonpause.setEnabled(false); 
+	                  
+	                //这里写暂停处理的 文件！加上list里面 语音合成起来  
+	                if(isPause){  
+	                      
+	                    //在暂停状态按下结束键,处理list就可以了  
+	                    if(inThePause){  
+	                        getInputCollection(list, false);  
+	                    }  
+	                    //在正在录音时，处理list里面的和正在录音的语音  
+	                    else{  
+	                        list.add(myRecAudioFile.getPath());  
+	                        recodeStop();  
+	                        getInputCollection(list, true);  
+	                    }  
+	                      
+	                    //还原标志位  
+	                    isPause=false;  
+	                    inThePause=false;  
+	                    buttonpause.setText("暂停录音");  
+	                      
+	                  
+	                      
+	                      
+	                //  adapter.add(myRecAudioFile.getName());  
+	                      
+	                }else{  //若录音没有经过任何暂停 
+	                      
+	                  
+	                    if (myRecAudioFile != null) {  
+		                    // 停止录音  
+		                    	recorder.stop();  
+		                    	recorder.release();  
+		                    	recorder = null;  
+		                    // 将录音频文件给Adapter  
+//		                    adapter.add(myRecAudioFile.getName());  
+//		                    DecimalFormat df = new DecimalFormat("#.000");  
+//		                    if (myRecAudioFile.length() <= 1024*1024) {  
+//		                        //length1 = (myRecAudioFile.length() / 1024.0)+"";  
+//		                          
+//		                          length1=df.format(myRecAudioFile.length() / 1024.0)+"K";  
+//		                    } else {  
+//		                        //length1 = (myRecAudioFile.length() / 1024.0 / 1024)+"";  
+//		                        //DecimalFormat df = new DecimalFormat("#.000");  
+//		                          length1=df.format(myRecAudioFile.length() / 1024.0 / 1024)+"M";  
+//		                    }  
+//	                        System.out.println(length1);  
+//	                        
+//	                        myTextView1.setText("停  止" + myRecAudioFile.getName()  
+//	                            + "文件大小为：" + length1); 
+	                        
+	                        list.add(myRecAudioFile.getPath());
+	                        getInputCollection(list, true);
+	                        
+	                        
+	                    }  
+	                  
+	                }  
+	 
+	                //停止录音了  
+	                isStopRecord = true;
+	                tempNO  = 0;
+	                list=new ArrayList<String>();
+	                saveLatestData(recordFileName);
+	                recordFileName = "";
+	                tempFileName = "";
+	                
+	            }else if (v == buttonpause) {
+	            	  
+	            	
+	            	
+	                //已经暂停过了，再次点击按钮 开始录音，录音状态在录音中  
+		            if(inThePause){ 
+		            	chronometer.setBase(SystemClock.elapsedRealtime()-tempClock);
+		            	tempRestartClock = SystemClock.elapsedRealtime()-tempStartClock;
+//		            	System.out.println("SystemClockjx:"+SystemClock.elapsedRealtime()/1000);
+		            	chronometer.start();
+		                buttonpause.setText("暂停录音");  
+		                initializeAudio(); 
+		                inThePause=false;  
+		                  
+		                  
+		            }  
+		            //正在录音，点击暂停,现在录音状态为暂停  
+		            else{
+		            	tempClock = SystemClock.elapsedRealtime()-tempStartClock-(tempRestartClock-tempClock);
+//		            	System.out.println("SystemClockzt:"+SystemClock.elapsedRealtime()/1000);
+//		            	System.out.println("tempClock:"+tempClock/1000);
+		            	chronometer.stop();
+		                //当前正在录音的文件名，全程  
+		                list.add(myRecAudioFile.getPath());
+		                recodeStop(); 
+		                inThePause=true; 
+		                //start();  
+		                buttonpause.setText("继续录音");  
+		                  
+		                //计时停止  
+		//                timer.cancel();  
+		            }
+		            isPause=true;
 				}
 			}
-
+			
+			 protected void recodeStop(){  
+			        if (recorder != null && !isStopRecord) {  
+			            // 停止录音  
+			        	recorder.stop();  
+			        	recorder.release();  
+			        	recorder = null;  
+			        }  
+			}  
 			private void initializeAudio() {
 				recorder = new MediaRecorder();// new出MediaRecorder对象
 				recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -225,8 +389,10 @@ public class MainActivity extends ActionBarActivity implements
 				// 设置MediaRecorder录制音频的编码为amr.
 //				recorder.setOutputFile("/sdcard/peipei.amr");
 				isExist(basePath);
-				setFileName();
-				recorder.setOutputFile(basePath+"/"+fileName+".amr");
+				setTempFileName();
+				myRecAudioFile=new File(basePath+"/"+tempFileName+".amr"); 
+				recorder.setOutputFile(myRecAudioFile  
+	                    .getAbsolutePath());
 				// 设置录制好的音频文件保存路径
 				try {
 					recorder.prepare();// 准备录制
@@ -238,7 +404,119 @@ public class MainActivity extends ActionBarActivity implements
 				}
 
 			}
+			/**
+			 * 合并录音文件
+			 * */
+			public  void getInputCollection(List list,boolean isAddLastRecord){  
+			    
+			    
+			    String  mMinute1=getTime();  
+			    Toast.makeText(getActivity(), "当前时间是:"+mMinute1,Toast.LENGTH_LONG).show();  
+			      
+			    // 创建音频文件,合并的文件放这里  
+			    File file1=new File(basePath+"/"+recordFileName+".amr");  
+			    FileOutputStream fileOutputStream = null;  
+			       
+			    if(!file1.exists()){  
+			        try {  
+			            file1.createNewFile();  
+			        } catch (IOException e) {  
+			            // TODO Auto-generated catch block  
+			            e.printStackTrace();  
+			        }  
+			    }  
+			    try {  
+			        fileOutputStream=new FileOutputStream(file1);  
 
+			    } catch (IOException e) {  
+			        // TODO Auto-generated catch block  
+			        e.printStackTrace();  
+			    }  
+			    //list里面为暂停录音 所产生的 几段录音文件的名字，中间几段文件的减去前面的6个字节头文件  
+			      
+			      
+			      
+			  
+			    for(int i=0;i<list.size();i++){  
+			        File file=new File((String) list.get(i));  
+			    Log.d("list的长度", list.size()+"");  
+			        try {  
+			            FileInputStream fileInputStream=new FileInputStream(file);  
+			            byte  []myByte=new byte[fileInputStream.available()];  
+			            //文件长度  
+			            int length = myByte.length;  
+			      
+			            //头文件  
+			            if(i==0){  
+			                    while(fileInputStream.read(myByte)!=-1){  
+			                            fileOutputStream.write(myByte, 0,length);  
+			                        }  
+			                    }  
+			                  
+			            //之后的文件，去掉头文件就可以了  
+			            else{  
+			                while(fileInputStream.read(myByte)!=-1){  
+			                      
+			                    fileOutputStream.write(myByte, 6, length-6);  
+			                }  
+			            }  
+			              
+			            fileOutputStream.flush();  
+			            fileInputStream.close();  
+			            System.out.println("合成文件长度："+file1.length());  
+			          
+			        } catch (Exception e) {  
+			            // TODO Auto-generated catch block  
+			            e.printStackTrace();  
+			        }  
+			          
+			          
+			          
+			        }  
+			    //结束后关闭流  
+			    try {  
+			        fileOutputStream.close();  
+			    } catch (IOException e) {  
+			        // TODO Auto-generated catch block  
+			        e.printStackTrace();  
+			    }  
+
+		        //合成一个文件后，删除之前暂停录音所保存的零碎合成文件  
+		        deleteListRecord(isAddLastRecord);  
+		        //  
+//			        adapter.add(file1.getName());  
+			  
+			}
+			private void deleteListRecord(boolean isAddLastRecord){  
+			    for(int i=0;i<list.size();i++){  
+			        File file=new File((String) list.get(i));  
+			        if(file.exists()){  
+			            file.delete();  
+			        }
+			    }
+			}  
+			/**
+			 * 设置TEMP文件名（按Temp_序号  ）
+			 * */
+			private void setTempFileName() {
+				String newName;
+					
+					 newName = "Temp_"+String.format("%1$,03d", tempNO+=1);
+//					System.out.println("name:"+newName);
+				
+				tempFileName = newName;
+			}
+			
+			private String getTime(){  
+			    SimpleDateFormat   formatter   =   new   SimpleDateFormat   ("yyyy年MM月dd日HH：mm：ss");        
+			    Date  curDate=new  Date(System.currentTimeMillis());//获取当前时间        
+			    String   time   =   formatter.format(curDate);    
+			    System.out.println("当前时间");  
+			    return time;  
+			    }  
+			/**
+			 * 设置新的文件名（按日期_序号  ）
+			 * */
 			private void setFileName() {
 				String date = getDateYYMMDD();
 				String newName;
@@ -250,9 +528,11 @@ public class MainActivity extends ActionBarActivity implements
 				}else {
 					newName = date+"_001";
 				}
-				fileName = newName;
+				recordFileName = newName;
 			}
-			
+			/**
+			 * 保存最新的日期数据
+			 * */
 			private void saveLatestData(String filename){
 				String date = filename.substring(0,8);
 				int no = Integer.valueOf(filename.substring(9));
@@ -262,6 +542,9 @@ public class MainActivity extends ActionBarActivity implements
 		        editor.putInt(LATEST_NO_KEY, no);
 		        editor.commit();
 			}
+			/**
+			 * 是否是旧日期
+			 * */
 			private Boolean isOldDate(String date){
 				sp = getActivity().getPreferences(MODE_PRIVATE);  
 		        String oldDate = sp.getString(LATEST_DATE_KEY, null);
@@ -272,10 +555,13 @@ public class MainActivity extends ActionBarActivity implements
 		        	return false;
 				}
 			}
+			/**
+			 * 得到最近保存的文件名
+			 * */
 			private String getLatestData(){
 				sp = getActivity().getPreferences(MODE_PRIVATE);  
 		        String date = sp.getString(LATEST_DATE_KEY, null);
-		        int no = sp.getInt(LATEST_NO_KEY, 0);
+		        String no = String.format("%1$,03d",sp.getInt(LATEST_NO_KEY, 0));
 		        return date+"_"+no;
 			}
 			
@@ -307,7 +593,9 @@ public class MainActivity extends ActionBarActivity implements
 //	        return res;   
 //	               
 //	    }   
-		
+		/**
+		 * 判断文件夹是否存在
+		 * */
 		public static void isExist(String path) {
 			File file = new File(path);
 			//判断文件夹是否存在,如果不存在则创建文件夹
@@ -315,19 +603,35 @@ public class MainActivity extends ActionBarActivity implements
 			file.mkdir();
 			}
 		}
-		
+		/**
+		 * 得到格式化日期
+		 * */
 		public String getDateYYMMDD() {
 			SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd");  
 			String date=sdf.format(new Date());
 			return date;
 		}
 		
+		
+		
+		@Override
+		public void onStop() {
+			if (recorder != null && !isStopRecord) {  
+	            // 停止录音  
+				recorder.stop();  
+				recorder.release();  
+				recorder = null;  
+	        }  
+			super.onStop();
+		}
+
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			((MainActivity) activity).onSectionAttached(getArguments().getInt(
 					ARG_SECTION_NUMBER));
 		}
+		
 	}
 
 }
