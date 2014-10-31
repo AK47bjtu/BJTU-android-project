@@ -222,3 +222,13 @@ src/ChinaRecorder/bin/classes/com/example/chinarecorder/PlayActivity.class
 src/ChinaRecorder/bin/ChinaRecorder.apk
 src/ChinaRecorder/bin/classes.dex
 src/ChinaRecorder/bin/classes/com/example/chinarecorder/PlayActivity.class
+
+*.class
+
+src/appcompat_v7Project/bin/R.txt
+
+src/appcompat_v7Project/gen/android/support/v7/appcompat/R.java
+
+src/ChinaRecorder/gen/android/support/v7/appcompat/R.java
+
+src/ChinaRecorder/gen/com/example/chinarecorder/R.java
