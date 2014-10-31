@@ -4,6 +4,7 @@
 
 bin/
 src/ChinaRecorder/bin/
+src/appcompat_v7Project/bin/
 *.class
 *.pydevproject
 .project
