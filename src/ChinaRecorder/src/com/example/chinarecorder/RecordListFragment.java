@@ -174,6 +174,7 @@ public class RecordListFragment extends ListFragment{
 //		.show();
 		Bundle args = new Bundle();
         args.putInt(RecordListFragment.ARG_POSITION, id);
+        args.putString("RECORD_NAME", "he.mp3");
 		Intent intent = new Intent();
 		
 		intent.setClass(RecordListFragment.this.getActivity(), PlayActivity.class);
