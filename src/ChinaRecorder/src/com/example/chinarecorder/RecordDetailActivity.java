@@ -161,7 +161,7 @@ public class RecordDetailActivity extends ActionBarActivity {
         /* 取得相片后返回本画面 */  
         startActivityForResult(intent, 1); 
 	}
-
+	
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -169,6 +169,7 @@ public class RecordDetailActivity extends ActionBarActivity {
             Uri uri = data.getData(); 
             Toast.makeText(this, "uri: "+uri, Toast.LENGTH_SHORT)
 			.show();
+            System.out.println("++++++++uri:"+uri);
             Log.e("uri", uri.toString());  
             ContentResolver cr = this.getContentResolver();  
             try {  
