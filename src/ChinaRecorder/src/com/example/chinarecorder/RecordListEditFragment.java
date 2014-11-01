@@ -1,12 +1,14 @@
 package com.example.chinarecorder;
 
 import java.io.ObjectOutputStream.PutField;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import com.example.bean.Recording;
+import com.example.util.FileDataUtil;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,6 +39,7 @@ public class RecordListEditFragment extends ListFragment{
 	 Button editSure,editCancel;
 	 RecoderEditAdapter adapter;
 	 List<Integer> listItemID = new ArrayList<Integer>();
+	 FileDataUtil fileDataUtil;
 	 
 	 int position = -1;
 	 
@@ -48,6 +51,11 @@ public class RecordListEditFragment extends ListFragment{
 		mContext = getActivity().getApplicationContext();
 		View view = inflater.inflate(
 				R.layout.fragment_record_list_edit, container, false);
+		
+		fileDataUtil = new FileDataUtil(getActivity());
+//		fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+		editRecordings = fileDataUtil.mediaList(fileDataUtil.basePath.substring(3)+"/"+fileDataUtil.recordDir);
+		
 //		 lv = (ListView) view.findViewById(R.id.lvrecord);
 		editSure = (Button) view.findViewById(R.id.delete_list_edit);
 		if (position == 1) {
@@ -91,17 +99,28 @@ public class RecordListEditFragment extends ListFragment{
           
          if(listItemID.size()==0){
              AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-             builder1.setMessage("没有选中任何要记录");
+             builder1.setMessage("没有选中任何记录");
              builder1.show();
          }else{
-             StringBuilder sb = new StringBuilder();
-              
-             for(int i=0;i<listItemID.size();i++){
-                 sb.append("ItemID="+listItemID.get(i)+" . ");
-             }
-             AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-             builder2.setMessage(sb.toString());
-             builder2.show();
+        	 if (position == 1) {//分享
+        		 StringBuilder sb = new StringBuilder();
+	              
+	             for(int i=0;i<listItemID.size();i++){
+	                 sb.append("ItemID="+listItemID.get(i)+" . ");
+	             }
+	             AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
+	             builder2.setMessage(sb.toString());
+	             builder2.show();
+			} else if(position == 2){//删除
+				List<Recording> deleteRecordings = new ArrayList<Recording>();
+				for(int i=0;i<listItemID.size();i++){
+	                 deleteRecordings.add(editRecordings.get(listItemID.get(i)));
+	            }
+				fileDataUtil.Delete_file(deleteRecordings);
+				fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+				getFragmentManager().popBackStack();
+			}
+             
          }
 	}
 	
@@ -111,7 +130,7 @@ public class RecordListEditFragment extends ListFragment{
 		
 		 ListView lv;
 		 lv =(ListView) this.getView().findViewById(android.R.id.list);
-		 initRecording();
+//		 initRecording();
 	     adapter = new RecoderEditAdapter(editRecordings);
 		 lv.setAdapter(adapter);
 		
@@ -170,18 +189,18 @@ public class RecordListEditFragment extends ListFragment{
 	private void initRecording() {
 		Recording tempRecording ;
 		editRecordings.clear();
-		for (int i = 0; i < 20; i++) {
-			tempRecording = new Recording();
-			tempRecording.setRname("ABC:"+i+"              ");
-			tempRecording.setRdate(new Date());
-			tempRecording.setRid(i);
-			tempRecording.setRsize(i);
-			tempRecording.setRformat("amr");
-			tempRecording.setRpic("C:/"+i+".jpg");
-			tempRecording.setRduration(5+i);
-			tempRecording.setRurl("D:/"+i+".amr");
-			editRecordings.add(tempRecording);
-		}
+//		for (int i = 0; i < 20; i++) {
+//			tempRecording = new Recording();
+//			tempRecording.setRname("ABC:"+i+"              ");
+//			tempRecording.setRdate(new Date());
+//			tempRecording.setRid(i);
+//			tempRecording.setRsize(i);
+//			tempRecording.setRformat("amr");
+//			tempRecording.setRpic("C:/"+i+".jpg");
+//			tempRecording.setRduration(5+i);
+//			tempRecording.setRurl("D:/"+i+".amr");
+//			editRecordings.add(tempRecording);
+//		}
 	}
 //	/**
 //	 * 列表跳转按钮事件方法
@@ -302,11 +321,12 @@ public class RecordListEditFragment extends ListFragment{
 				holder = (ViewHolder)view.getTag();
 			}
 			
-			
+			 SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 //			holder.pic.setBackgroundResource((Integer)recordings.get(position).get("img"));
-			holder.pic.setBackgroundResource(R.drawable.app_pic_net_people);//自定义图片
-			holder.name.setText(editRecordings.get(position).getRname());
-			holder.time.setText(editRecordings.get(position).getRdate().toString());
+			holder.pic.setBackgroundResource(R.drawable.ic_tab_songs_unselected);//自定义图片
+			holder.name.setText(editRecordings.get(position).getRname()+"      ");
+			holder.time.setText(timeFormat1.format(editRecordings.get(position).getRdate())+"  "
+						+editRecordings.get(position).getRsize()+"KB");
 			holder.selected.setChecked(mChecked.get(position));
 			
 			

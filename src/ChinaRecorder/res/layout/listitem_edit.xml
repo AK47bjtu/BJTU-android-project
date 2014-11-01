@@ -34,7 +34,7 @@
 			         android:layout_weight="1"
 			         android:text="Name"
 			         android:layout_gravity="center"
-			         android:textSize="48px"
+			         android:textSize="40px"
 			         />
 			     <TextView
 			         android:id="@+id/list.time_edit"
@@ -43,7 +43,7 @@
 			         android:layout_weight="1"
 			         android:text="Time"
 			         android:layout_gravity="center"
-			         android:textSize="33px"/> 
+			         android:textSize="25px"/> 
       </LinearLayout>
       <LinearLayout  
         android:layout_width="fill_parent"  
@@ -55,7 +55,8 @@
          android:id="@+id/list.select_edit"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginRight="10px"/>
+         android:layout_marginRight="10px"
+         android:background="@drawable/main_content_unchecked"/>
       </LinearLayout>
       
   </LinearLayout>

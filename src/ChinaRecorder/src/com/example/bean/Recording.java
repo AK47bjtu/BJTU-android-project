@@ -8,8 +8,8 @@ public class Recording {
 	private Date rdate;
 	private String rpic;
 	private String rurl;
-	private int rsize;
-	private int rduration;
+	private float rsize;
+	private String rduration;
 	private String rformat;
 	
 	public int getRid() {
@@ -42,16 +42,16 @@ public class Recording {
 	public void setRurl(String rurl) {
 		this.rurl = rurl;
 	}
-	public int getRsize() {
+	public float getRsize() {
 		return rsize;
 	}
-	public void setRsize(int rsize) {
+	public void setRsize(float rsize) {
 		this.rsize = rsize;
 	}
-	public int getRduration() {
+	public String getRduration() {
 		return rduration;
 	}
-	public void setRduration(int rduration) {
+	public void setRduration(String rduration) {
 		this.rduration = rduration;
 	}
 	public String getRformat() {

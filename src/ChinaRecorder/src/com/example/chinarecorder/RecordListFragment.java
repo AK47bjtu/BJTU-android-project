@@ -1,10 +1,13 @@
 package com.example.chinarecorder;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.example.bean.Recording;
+import com.example.util.FileDataUtil;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -29,11 +32,12 @@ import android.widget.Toast;
 
 public class RecordListFragment extends ListFragment{
 	 final static String ARG_POSITION = "position";
-	 public static List<Recording> recordings = new ArrayList<Recording>();
+	 public static List<Recording> recordings = new ArrayList<Recording>() ;
 	 Context mContext;
 	 ImageButton editShare,editDelete;
 	 private ListView lv ;
 	 RecoderAdapter adapter;
+	 FileDataUtil fileDataUtil ;
 	 
 	 OnRecordListEditListener recordEditJump;
 	 /**
@@ -55,6 +59,14 @@ public class RecordListFragment extends ListFragment{
 		View view = inflater.inflate(
 				R.layout.fragment_record_list, container, false);
 //		 lv = (ListView) view.findViewById(R.id.lvrecord);
+		
+		fileDataUtil = new FileDataUtil(getActivity());
+		System.out.println("path:"+fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+		fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+		recordings = fileDataUtil.mediaList(fileDataUtil.basePath.substring(3)+"/"+fileDataUtil.recordDir);
+		                                //fileDataUtil.basePath.substring(3)+"/"+fileDataUtil.recordDir    "/chinarecord/"
+		
+//		List<Recording>test = fileDataUtil.mediaList("/chinarecord/");
 		editShare = (ImageButton) view.findViewById(R.id.share);
 		editShare.setOnClickListener(new View.OnClickListener() {
             /**
@@ -93,7 +105,7 @@ public class RecordListFragment extends ListFragment{
 		
 		 ListView lv;
 		 lv =(ListView) this.getView().findViewById(android.R.id.list);
-		 initRecording();
+//		 initRecording();
 	     adapter = new RecoderAdapter(recordings);
 		 lv.setAdapter(adapter);
 		
@@ -138,18 +150,24 @@ public class RecordListFragment extends ListFragment{
 	private void initRecording() {
 		Recording tempRecording ;
 		recordings.clear();
-		for (int i = 0; i < 20; i++) {
-			tempRecording = new Recording();
-			tempRecording.setRname("ABC:"+i+"              ");
-			tempRecording.setRdate(new Date());
-			tempRecording.setRid(i);
-			tempRecording.setRsize(i);
-			tempRecording.setRformat("amr");
-			tempRecording.setRpic("C:/"+i+".jpg");
-			tempRecording.setRduration(5+i);
-			tempRecording.setRurl("D:/"+i+".amr");
-			recordings.add(tempRecording);
-		}
+//		int a = fileDataUtil.mediaList("/chinarecord/").size();
+//		for (int i = 0; i < fileDataUtil.mediaList("/chinarecord/").size(); i++) {
+//			System.out.println(fileDataUtil.mediaList("/chinarecord/").get(i).getRurl());
+//			recordings.add( fileDataUtil.mediaList("/chinarecord/").get(i));
+//		}
+//		System.out.println(recordings.size());
+//		for (int i = 0; i < 20; i++) {
+//			tempRecording = new Recording();
+//			tempRecording.setRname("ABC:"+i+"              ");
+//			tempRecording.setRdate(new Date());
+//			tempRecording.setRid(i);
+//			tempRecording.setRsize(i);
+//			tempRecording.setRformat("amr");
+//			tempRecording.setRpic("C:/"+i+".jpg");
+//			tempRecording.setRduration(5+i);
+//			tempRecording.setRurl("D:/"+i+".amr");
+//			recordings.add(tempRecording);
+//		}
 	}
 	/**
 	 * 列表跳转按钮事件方法
@@ -174,7 +192,8 @@ public class RecordListFragment extends ListFragment{
 //		.show();
 		Bundle args = new Bundle();
         args.putInt(RecordListFragment.ARG_POSITION, id);
-        args.putString("RECORD_NAME", "he.mp3");
+        args.putString("RECORD_FILE", recordings.get(id).getRurl());
+        args.putString("RECORD_NAME", recordings.get(id).getRname()+"."+recordings.get(id).getRformat());
 		Intent intent = new Intent();
 		
 		intent.setClass(RecordListFragment.this.getActivity(), PlayActivity.class);
@@ -250,11 +269,12 @@ public class RecordListFragment extends ListFragment{
 				holder = (ViewHolder)convertView.getTag();
 			}
 			
-			
+			 SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 //			holder.pic.setBackgroundResource((Integer)recordings.get(position).get("img"));
-			holder.pic.setBackgroundResource(R.drawable.app_pic_net_people);
-			holder.name.setText(recordings.get(position).getRname());
-			holder.time.setText(recordings.get(position).getRdate().toString());
+			holder.pic.setBackgroundResource(R.drawable.ic_tab_songs_unselected);
+			holder.name.setText(recordings.get(position).getRname()+"      ");
+			holder.time.setText(timeFormat1.format(recordings.get(position).getRdate())+"  "
+						+recordings.get(position).getRsize()+"KB");//+" "+recordings.get(position).getRsize()+"KB"
 			holder.viewBtn.setBackgroundResource(R.drawable.button_show_record_detail);
 			holder.viewBtn.setTag(position);  
 			holder.viewBtn.setOnClickListener(new View.OnClickListener() {

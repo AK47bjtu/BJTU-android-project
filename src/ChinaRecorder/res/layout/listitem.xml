@@ -30,7 +30,7 @@
 			         android:layout_weight="1"
 			         android:text="Name"
 			         android:layout_gravity="center"
-			         android:textSize="48px"
+			         android:textSize="40px"
 			         />
 			     <TextView
 			         android:id="@+id/list.time"
@@ -39,7 +39,7 @@
 			         android:layout_weight="1"
 			         android:text="Time"
 			         android:layout_gravity="center"
-			         android:textSize="33px"/> 
+			         android:textSize="25px"/> 
       </LinearLayout>
       <LinearLayout  
         android:layout_width="fill_parent"  

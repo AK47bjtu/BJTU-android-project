@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.bean.Recording;
+import com.example.util.FileDataUtil;
 
 import android.support.v7.app.ActionBarActivity;
 import android.app.AlertDialog;
@@ -36,7 +37,7 @@ import android.widget.Toast;
 
 public class RecordDetailActivity extends ActionBarActivity {
 	
-
+	
     private final int TYPE_DETAIL   = 0;
     private final int TYPE_BUTTON   = 1;
 //	private final int TYPE_SWITCH   = 2;
@@ -44,10 +45,12 @@ public class RecordDetailActivity extends ActionBarActivity {
 	Recording recording;
 	List<Map<String, Object>> mData = new ArrayList<Map<String, Object>>();
 	MyAdapter listAdapter ;
+	public FileDataUtil fileDataUtil ;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		fileDataUtil = new FileDataUtil(this);
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
 	    int	i = bundle.getInt(RecordListFragment.ARG_POSITION);
@@ -84,7 +87,7 @@ public class RecordDetailActivity extends ActionBarActivity {
 			
 			map = new HashMap<String, Object>();
 			map.put("title", "大小");
-			map.put("detail",String.valueOf(recording.getRsize()));
+			map.put("detail",String.valueOf(recording.getRsize())+"KB");
 			mData.add(map);
 			
 			map = new HashMap<String, Object>();
@@ -134,21 +137,37 @@ public class RecordDetailActivity extends ActionBarActivity {
 //        System.out.println("++++++++++++"+str);
         inputServer.setText(str.toCharArray(), 0, str.length());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.fix)).setIcon(
                 R.drawable.ic_launcher).setView(inputServer).setNegativeButton(
                 getString(R.string.cancel), null);
         builder.setPositiveButton(getString(R.string.notarize),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                    	String tempFile = fileDataUtil.basePath+"/"+fileDataUtil.recordDir;
                         String inputName = inputServer.getText().toString();
-                        System.out.println(inputName);
+                        fileDataUtil.deleteFileInData(recording.getRid());
+                        System.out.println("tempFile:"+tempFile);
+                        fileDataUtil.Rename_file(tempFile+recording.getRname(), tempFile+inputName);
+                        flushDataBase();
+                        Intent intent = new Intent();
+                		
+                		intent.setClass(builder.getContext(), RecordDetailActivity.class);
+                		
+                		startActivity(intent);
+//                        System.out.println(inputName);
                       /*************************************/  
                         
                     }
                 });
         builder.show();
     }
+	private void flushDataBase() {
+		fileDataUtil.scanDirAsync3(this, fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+	}
+	private void flushListView() {
+		
+	}
 	/**
 	 * 修改图片
 	 * */

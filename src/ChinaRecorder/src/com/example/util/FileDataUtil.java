@@ -1,8 +1,10 @@
 package com.example.util;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.example.bean.Recording;
@@ -10,16 +12,22 @@ import com.example.bean.Recording;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ParseException;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
 public class FileDataUtil {
+	/** 设置 录音文件文件夹  **/
+	public String recordDir = "chinarecord/";
+	/** SD卡根目录  **/
 	public static String basePath = Environment.getExternalStorageDirectory().getAbsolutePath();//得到SD卡根目录
 	public static final String ACTION_MEDIA_SCANNER_SCAN_DIR = "android.intent.action.MEDIA_SCANNER_SCAN_DIR";
 	public static Activity activity;
@@ -52,6 +60,8 @@ public class FileDataUtil {
 	                            	for (int i = 0; i < recordings.size(); i++) {
 	                            		//删除文件	
 	                            		new File(recordings.get(i).getRurl()).delete();
+	                            		deleteFileInData(recordings.get(i).getRid());
+//	                            		deleteFileInData(25482);
 	                         		}
 	                            	 
 	                            }  
@@ -63,12 +73,28 @@ public class FileDataUtil {
 		                        @Override  
 		                        public void onClick(  
 		                                DialogInterface dialog,  
-		                                int which) {  
+		                                int which) {
+		                        	
 		                        }  
 		                    }).show(); 
     	 
            }  
     }
+   
+    public void deleteFileInData(int id) {
+		ContentResolver resolver = activity.getContentResolver();
+
+//		Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+//		Uri uri = Uri.fromFile(new File("/sdcard/chinarecord/20141029_001.amr"));
+		Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,id);
+		ContentValues values = new ContentValues();
+
+//		values.put(MediaStore.Audio.Media.ARTIST, "44444dfdkk");
+
+		int delete = resolver.delete(uri, null, null);
+										// MediaStore.Audio.Media.DATA+"=?", new String[] { "/storage/emulated/0/chinarecord/20141029_001.amr" }
+	}
+    
     
     /**
      * 文件重命名
@@ -123,20 +149,43 @@ public class FileDataUtil {
     }
     
     
+    /**
+     * 插入图片路径（更新时会丢失）
+     * */
+    public void updateArtist2Pic(String artist2Pic, String path) {
+		ContentResolver resolver = activity.getContentResolver();
+
+//		Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+//		Uri uri = Uri.fromFile(new File("/sdcard/chinarecord/20141029_001.amr"));
+		Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,23514);
+		ContentValues values = new ContentValues();
+
+		values.put(MediaStore.Audio.Media.ARTIST, "44444dfdkk");
+
+		int update = resolver.update(uri,values,null,null);
+										// MediaStore.Audio.Media.DATA+"=?", new String[] { "/storage/emulated/0/chinarecord/20141029_001.amr" }
+	}
+    
     
     
     /*
      * getTypeName 取出文件中的 音频格式类型
      * http://blog.bccn.net/kingyor/1919
      * */
-    public String getTypeName(String s){
-    	  String s1=s.substring(s.indexOf(".")+1,s.length());
-    	  return s1;
+    public String getTypeName(String str){
+    	  String temp=str.substring(str.indexOf(".")+1,str.length());
+    	  return temp;
+    }
+    public String getName(String str){
+    	String temp = str.substring(0, str.indexOf("."));
+    	return temp;
     }
     
-    
-//    public List<Recording> mediaList(String src){
-    public String mediaList(String src){
+    /**
+     * 获取文件信息Model列表
+     * */
+    public List<Recording> mediaList(String src){
+//    public String mediaList(String src){
 	    ContentResolver mResolver = activity.getContentResolver();   
         Cursor cursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         String url,list = "";
@@ -153,48 +202,51 @@ public class FileDataUtil {
                 int t=url.indexOf(src);
                SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                SimpleDateFormat timeFormat2 = new SimpleDateFormat("mm:ss");
-                System.out.println();
+               DecimalFormat df = new DecimalFormat(".00");
+//                System.out.println();
                 if( t> 0)
                 {
-                	list += 
-                			"("+cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID))+")"
-                			+"("+cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))+")"
-                			
-                			+"("+timeFormat2.format((cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))))+")"
-                			+"("+timeFormat1.format(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED))*1000)+")"
-//                			+"("+new Date().getTime()+")"
- //               			+"("+cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.CONTENT_TYPE))+")"
-                			+"("+cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE))+")"
-                			+"("+getTypeName(url)+")"
-         			          
-                			 +")"+"\n"+url+"\n"+"\n";
+//                	list += 
+//                			"("+cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID))+")"
+//                			+"("+cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))+")"
+//                			
+//                			+"("+timeFormat2.format((cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))))+")"
+//                			+"("+timeFormat1.format(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED))*1000)+")"
+////                			+"("+new Date().getTime()+")"
+// //               			+"("+cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.CONTENT_TYPE))+")"
+//                			+"("+cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE))+")"
+//                			+"("+getTypeName(url)+")"
+//         			          
+//                			 +")"+"\n"+url+"\n"+"\n";
                 	
-//                	Recording recording = new Recording();
-//                	recording.setRid(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)));
-//                	recording.setRname(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)));
-//                	
-//                	recording.setRduration(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-//                	Date date;
-//					try {
-//						date = timeFormat1.parse(timeFormat1.format(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED))*1000));
-//						recording.setRdate(date);
-//					} catch (IllegalArgumentException e) {
-//						e.printStackTrace();
-//					} catch (ParseException e) {
-//						e.printStackTrace();
-//					}
-//                	recording.setRsize(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)));
-//                	recording.setRname(url);
-//                	recording.setRformat(getTypeName(url));
+                	Recording recording = new Recording();
+                	recording.setRid(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)));
+                	recording.setRname(getName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))));
                 	
+                	recording.setRduration(timeFormat2.format(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
+                	Date date;
+					
+						try {
+							date = timeFormat1.parse(timeFormat1.format(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED))*1000));
+//							System.out.println("date:"+timeFormat1.format(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED))*1000));
+							recording.setRdate(date);
+						} catch (java.text.ParseException e) {
+							e.printStackTrace();
+						}
+						
+					
+                	recording.setRsize(Float.valueOf(df.format(cursor.getFloat(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE))/1024)));
+                	recording.setRurl(url);
+                	recording.setRformat(getTypeName(url));
+                	recordings.add(recording);
                 }            
                 i++;
                 cursor.moveToNext();                
             }
             cursor.close();
         }
-//        return recordings;
-        return list;
+        return recordings;
+//        return list;
 	}
 	/**
 	 * 通知MediaStore系统服务扫描指定文件
@@ -210,22 +262,18 @@ public class FileDataUtil {
 	 * */
 	public void scanDirAsync3(Context ctx, String dir) {
 		File file = new File(dir);
-		System.out.println("file0");
-		Log.d("MainActivity", "file name is " + "file0");
+//		System.out.println("file0");
         if(file.exists() && file.isDirectory()){
             File[] array = file.listFiles();
-            System.out.println("file");
-            Log.d("MainActivity", "file name is " + "file");
+//            System.out.println("file");
             for(int i=0;i<array.length;i++){
                 File f = array[i];
                 
 //                if(f.isFile()){//FILE TYPE
                     String name = f.getName();
-                    System.out.println("++++++name:"+name);
-                    Log.d("MainActivity", "file name is +++++name:" + name);
+//                    System.out.println("++++++name:"+name);
                     if(name.endsWith(".amr") || name.endsWith(".mp3") ){
-                    	System.out.println("+++++++音频文件++++++");
-                    	Log.d("MainActivity", "+++++++音频文件++++++");
+//                    	System.out.println("+++++++音频文件++++++");
                     	scanFileAsync(activity,f.getAbsolutePath());
                     }
 //                }
@@ -237,18 +285,18 @@ public class FileDataUtil {
 	} 
 	
 	
-	/**
-	 * 通知MediaStore系统服务扫描指定文件夹(不起作用)
-	 * */
-	public void scanDirAsync(Context ctx, String dir) {
-	Intent scanIntent = new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR);
-	scanIntent.setData(Uri.fromFile(new File(dir)));
-	ctx.sendBroadcast(scanIntent);
-	} 
+//	/**
+//	 * 通知MediaStore系统服务扫描指定文件夹(不起作用)
+//	 * */
+//	public void scanDirAsync(Context ctx, String dir) {
+//	Intent scanIntent = new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR);
+//	scanIntent.setData(Uri.fromFile(new File(dir)));
+//	ctx.sendBroadcast(scanIntent);
+//	} 
 	
-	/**
-	 * 通过MediaScanner扫描指定文件夹(MediaScanner未公开于AndroidAPI)
-	 * */
+//	/**
+//	 * 通过MediaScanner扫描指定文件夹(MediaScanner未公开于AndroidAPI)
+//	 * */
 	
 //	public void scanDirAsync2(Context ctx,String dir) {
 //	String[] driectories = new String[]{dir};

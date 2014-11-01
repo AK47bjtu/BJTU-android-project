@@ -43,6 +43,7 @@ public class PlayActivity extends ActionBarActivity {
 	private TextView currentTime;
 	private ImageView rotecd;
 	private int duration;
+	private String recordFile;
 	private String recordName;
 	private Button pause;
 	private TextView rn;
@@ -65,9 +66,10 @@ public class PlayActivity extends ActionBarActivity {
 		Bundle bundle = intent.getExtras();
 	    int	i = bundle.getInt(RecordListFragment.ARG_POSITION);
 	    recordName = bundle.getString("RECORD_NAME");
+	    recordFile = bundle.getString("RECORD_FILE");
 	    recording = RecordListFragment.recordings.get(i);
 		setContentView(R.layout.activity_play);	
-		System.out.println(recording.getRname());
+//		System.out.println(recording.getRname());
 		 mediaPlayer = new MediaPlayer();
 		 	rn = (TextView)this.findViewById(R.id.tex);
 		 	rn.setText(recordName);
@@ -134,9 +136,11 @@ public class PlayActivity extends ActionBarActivity {
 		public void mediaplayer(View v){
 	    	switch (v.getId()){
 	    	 case R.id.playbutton:
-	    		 String filename = edi.getText().toString();
+//	    		 String filename = edi.getText().toString();
 	    		 /** BUG document add**/
-	    		 File audio = new File(Environment.getExternalStorageDirectory(),filename);	    		 
+//	    		 File audio = new File(Environment.getExternalStorageDirectory()+"filerecord",filename);
+	    		 File audio = new File(recordFile);
+	    		 System.out.println("path:"+audio);
 	    		 if(audio.exists()) {
 	    			 path = audio.getAbsolutePath();
 	    			 System.out.println("pipi");
