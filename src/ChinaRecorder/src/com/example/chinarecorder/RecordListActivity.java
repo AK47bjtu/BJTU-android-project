@@ -1,5 +1,6 @@
 package com.example.chinarecorder;
 
+import android.speech.RecognitionListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -11,7 +12,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class RecordListActivity extends ActionBarActivity 
-	implements RecordListFragment.OnRecordListEditListener{
+	implements RecordListFragment.OnRecordListEditListener
+	,RecordListFragment.OnRecordDitalListener{
 
 	public static int BACKTOLIST = 0;
 	public static int GOTOSHARE = 1;
@@ -27,8 +29,27 @@ public class RecordListActivity extends ActionBarActivity
 		args.putInt(RecordListEditFragment.ARG_EDIT, position);
 		recordListEditFragment.setArguments(args);
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.container, recordListEditFragment);
+//		transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		transaction.setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out,R.anim.abc_fade_in,R.anim.abc_fade_out);
+		transaction.replace(R.id.listcontainer, recordListEditFragment);
 	    transaction.addToBackStack(null); 
+		transaction.commit();
+	}
+	
+	@Override
+	public void onDetail(int position) {
+		rTitle = getString(R.string.detail);
+		restoreActionBar();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//		transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		transaction.setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out,R.anim.push_right_in,R.anim.push_right_out);
+		RecordDetailFragment recordDetailFragment = new RecordDetailFragment();
+		Bundle args = new Bundle();
+		System.out.println("id:"+position);
+        args.putInt(RecordListFragment.ARG_POSITION, position);
+		recordDetailFragment.setArguments(args);
+		transaction.replace(R.id.listcontainer, recordDetailFragment);
+		transaction.addToBackStack(null);
 		transaction.commit();
 	}
 	
@@ -38,7 +59,7 @@ public class RecordListActivity extends ActionBarActivity
 		setContentView(R.layout.activity_record_list);
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new RecordListFragment()).commit();
+					.add(R.id.listcontainer, new RecordListFragment()).commit();
 		}
 		rTitle = getTitle();
 	}
@@ -75,15 +96,26 @@ public class RecordListActivity extends ActionBarActivity
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-//		int id = item.getItemId();
-//		if (id == R.id.action_settings) {
-//			return true;
-//		}
+	
+		int id = item.getItemId();
+		
+		if (id == android.R.id.home) {
+			if(rTitle.equals(getString(R.string.detail))){
+				getSupportFragmentManager().popBackStack();
+				rTitle = getString(R.string.title_record);
+				restoreActionBar();
+				return true;
+			}else if(rTitle.equals(getString(R.string.title_record))){
+				 this.finish();  //finish当前activity  
+		         overridePendingTransition(R.anim.push_right_in,  
+		                    R.anim.push_right_out);
+				return true;
+			}
+		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	
 
 	
 	

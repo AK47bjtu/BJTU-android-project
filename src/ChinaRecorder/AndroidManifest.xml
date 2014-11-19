@@ -26,22 +26,16 @@
         <activity
             android:name=".RecordListActivity"
             android:label="@string/title_record"
+            android:logo="@drawable/home_app"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.chinarecorder.MainActivity" />
         </activity>
         <activity
-            android:name=".RecordDetailActivity"
-            android:label="@string/title_activity_record_detail"
-            android:parentActivityName=".RecordListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.chinarecorder.RecordListActivity" />
-        </activity>
-        <activity
             android:name=".PlayActivity"
             android:label="@string/title_activity_play"
+            android:logo="@drawable/home_app"
             android:parentActivityName=".RecordListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

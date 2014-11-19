@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -79,9 +80,11 @@ public class NavigationDrawerFragment extends Fragment {
 					.getInt(STATE_SELECTED_POSITION);
 			mFromSavedInstanceState = true;
 		}
-
+		
 		// Select either the default item (0) or the last selected item.
 		selectItem(mCurrentSelectedPosition);
+		getActivity().getFragmentManager().beginTransaction().replace(R.id.prefercontainer,
+	                new MyPrefsFragment()).commit();
 	}
 
 	@Override
@@ -95,24 +98,27 @@ public class NavigationDrawerFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		mDrawerListView = (ListView) inflater.inflate(
+		
+		View view= inflater.inflate(
 				R.layout.fragment_navigation_drawer, container, false);
-		mDrawerListView
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						selectItem(position);
-					}
-				});
-		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar()
-				.getThemedContext(), android.R.layout.simple_list_item_1,
-				android.R.id.text1, new String[] {
-						getString(R.string.title_section1),
-						getString(R.string.title_section2),
-						getString(R.string.title_section3), }));
-		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-		return mDrawerListView;
+//				this.getView().findViewById(R.id.leftlist);
+//		mDrawerListView = (ListView) view.findViewById(R.id.leftlist);
+//		mDrawerListView
+//				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//					@Override
+//					public void onItemClick(AdapterView<?> parent, View view,
+//							int position, long id) {
+//						selectItem(position);
+//					}
+//				});
+//		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar()
+//				.getThemedContext(), android.R.layout.simple_list_item_1,
+//				android.R.id.text1, new String[] {
+//						getString(R.string.title_section1),
+//						getString(R.string.title_section2),
+//						getString(R.string.title_section3), }));
+//		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+		return view;
 	}
 
 	public boolean isDrawerOpen() {
@@ -164,7 +170,7 @@ public class NavigationDrawerFragment extends Fragment {
 					return;
 				}
 
-				getActivity().supportInvalidateOptionsMenu(); // calls
+				getActivity().supportInvalidateOptionsMenu(); // calls//.supportInvalidateOptionsMenu();
 																// onPrepareOptionsMenu()
 			}
 
@@ -186,7 +192,7 @@ public class NavigationDrawerFragment extends Fragment {
 							.commit();
 				}
 
-				getActivity().supportInvalidateOptionsMenu(); // calls
+				getActivity().supportInvalidateOptionsMenu(); // calls//.supportInvalidateOptionsMenu();
 																// onPrepareOptionsMenu()
 			}
 		};
@@ -301,11 +307,11 @@ public class NavigationDrawerFragment extends Fragment {
 	 */
 	private void showGlobalContextActionBar() {//侧边栏标题显示
 		ActionBar actionBar = getActionBar();
-		actionBar.setDisplayShowTitleEnabled(false);//是否显示标题（是/否）
+		actionBar.setDisplayShowTitleEnabled(true);//是否显示标题（是/否）
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 //		actionBar.setDisplayShowHomeEnabled(false);//是否显示标题图标(是/否)
 //		actionBar.setDisplayUseLogoEnabled(false);//是否显示标题图标(是/否)<不知为啥无效>
-		actionBar.setTitle(R.string.app_name);
+		actionBar.setTitle(R.string.person);
 	}
 
 	private ActionBar getActionBar() {
@@ -322,4 +328,15 @@ public class NavigationDrawerFragment extends Fragment {
 		 */
 		void onNavigationDrawerItemSelected(int position);
 	}
+	
+	 public static class MyPrefsFragment extends PreferenceFragment {
+
+	        @Override
+	        public void onCreate(Bundle savedInstanceState) {
+	            super.onCreate(savedInstanceState);
+
+	            // Load the preferences from an XML resource
+	            addPreferencesFromResource(R.xml.preferences);
+	        }
+	    }
 }

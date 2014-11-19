@@ -50,6 +50,17 @@ public class RecordListFragment extends ListFragment{
 		 public void onEditSelected(int position);
 	 }
 	 
+	 OnRecordDitalListener recordDetailJump;
+	 /**
+	  * 定义选择跳转的详细信息Fragment接口
+	  * */
+	 public interface OnRecordDitalListener{
+		 /**
+		  * 选择跳转的详细信息Fragment接口方法
+		  * */
+		 public void onDetail(int position);
+	 }
+	 
 	 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
@@ -122,11 +133,18 @@ public class RecordListFragment extends ListFragment{
 		super.onAttach(activity);
 		
 		try {  
-			recordEditJump = (OnRecordListEditListener) activity;  
+			recordEditJump = (OnRecordListEditListener) activity;
         } catch (ClassCastException e) {  
             throw new ClassCastException(activity.toString()  
                     + " must implement OnRecordListEditListener");  
-        } 
+        }
+		
+		try {  
+			recordDetailJump = (OnRecordDitalListener) activity;
+        } catch (ClassCastException e) {  
+            throw new ClassCastException(activity.toString()  
+                    + " must implement OnRecordDitalListener");  
+        }
 		
 		
 //		((RecordListActivity) activity).myGetItem2(getArguments().getInt(
@@ -176,15 +194,20 @@ public class RecordListFragment extends ListFragment{
 		
 //		Toast.makeText(mContext, "imgBtn"+id, Toast.LENGTH_SHORT)
 //		.show();
-		Bundle args = new Bundle();
-        args.putInt(RecordListFragment.ARG_POSITION, id);
-		Intent intent = new Intent();
+//		FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+//		Bundle args = new Bundle();
+//        args.putInt(RecordListFragment.ARG_POSITION, id);
+//		Intent intent = new Intent();
+//		
+//		intent.setClass(RecordListFragment.this.getActivity(), RecordDetailFragment.class);
+//		intent.putExtras(args);
+//		startActivity(intent);
+		jumpToDetail(id);
 		
-		intent.setClass(RecordListFragment.this.getActivity(), RecordDetailActivity.class);
-		intent.putExtras(args);
-		startActivity(intent);
 		
-		
+	}
+	private void jumpToDetail(int id){
+		recordDetailJump.onDetail(id);
 	}
 	
 	private void myGetItem(int id) {
@@ -285,7 +308,7 @@ public class RecordListFragment extends ListFragment{
 				@Override
 				public void onClick(View v) {
 //					showInfo();	
-					
+//					System.out.println(position);
 					showDetail(position);
 					
 				}

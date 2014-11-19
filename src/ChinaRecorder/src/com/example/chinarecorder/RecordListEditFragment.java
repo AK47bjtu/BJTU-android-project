@@ -68,6 +68,7 @@ public class RecordListEditFragment extends ListFragment{
             @Override
             public void onClick(View v) {
             	clickCheckBoxList();
+            	getFragmentManager().popBackStack();
             }
             
 		});
@@ -118,7 +119,7 @@ public class RecordListEditFragment extends ListFragment{
 	            }
 				fileDataUtil.Delete_file(deleteRecordings);
 				fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
-				getFragmentManager().popBackStack();
+				
 			}
              
          }

@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.bean.Recording;
+import com.example.chinarecorder.RecordListFragment.OnRecordListEditListener;
 import com.example.util.FileDataUtil;
 
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -35,7 +39,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RecordDetailActivity extends ActionBarActivity {
+public class RecordDetailFragment extends ListFragment{
 	
 	
     private final int TYPE_DETAIL   = 0;
@@ -47,24 +51,28 @@ public class RecordDetailActivity extends ActionBarActivity {
 	MyAdapter listAdapter ;
 	public FileDataUtil fileDataUtil ;
 	
+
+	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		fileDataUtil = new FileDataUtil(this);
-		Intent intent = getIntent();
-		Bundle bundle = intent.getExtras();
-	    int	i = bundle.getInt(RecordListFragment.ARG_POSITION);
-	    recording = RecordListFragment.recordings.get(i);
-		setContentView(R.layout.activity_record_detail);
-		
-		ListView lv = (ListView) this.findViewById(R.id.listview_home);       
-		initDetail();
-		
-		listAdapter = new MyAdapter(this);
-		lv.setAdapter(listAdapter);
-		
-		
+	public View onCreateView(LayoutInflater inflater,
+			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+			fileDataUtil = new FileDataUtil(getActivity());
+//			Intent intent = getActivity().getIntent();
+//			Bundle bundle = intent.getExtras();
+//		    int	i = bundle.getInt(RecordListFragment.ARG_POSITION);
+			int i = getArguments().getInt(RecordListFragment.ARG_POSITION);
+		    recording = RecordListFragment.recordings.get(i);
+		    View view = inflater.inflate(
+					R.layout.fragment_record_detail, container, false);
+			
+			ListView lv = (ListView) view.findViewById(android.R.id.list);       
+			initDetail();
+			
+			listAdapter = new MyAdapter(getActivity());
+			lv.setAdapter(listAdapter);
+		return view;
 	}
+	
 	/**
 	 * 初始化属性栏
 	 * */
@@ -132,12 +140,12 @@ public class RecordDetailActivity extends ActionBarActivity {
 	 * */
 	private void inputTitleDialog(String str) {
 
-        final EditText inputServer = new EditText(this);
+        final EditText inputServer = new EditText(getActivity());
         inputServer.setFocusable(true);
 //        System.out.println("++++++++++++"+str);
         inputServer.setText(str.toCharArray(), 0, str.length());
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.fix)).setIcon(
                 R.drawable.ic_launcher).setView(inputServer).setNegativeButton(
                 getString(R.string.cancel), null);
@@ -152,7 +160,7 @@ public class RecordDetailActivity extends ActionBarActivity {
                         flushDataBase();
                         Intent intent = new Intent();
                 		
-                		intent.setClass(builder.getContext(), RecordDetailActivity.class);
+                		intent.setClass(builder.getContext(), RecordDetailFragment.class);
                 		
                 		startActivity(intent);
 //                        System.out.println(inputName);
@@ -163,7 +171,7 @@ public class RecordDetailActivity extends ActionBarActivity {
         builder.show();
     }
 	private void flushDataBase() {
-		fileDataUtil.scanDirAsync3(this, fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+		fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
 	}
 	private void flushListView() {
 		
@@ -183,14 +191,14 @@ public class RecordDetailActivity extends ActionBarActivity {
 	
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == RESULT_OK) {  
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == getActivity().RESULT_OK) {  
             Uri uri = data.getData(); 
-            Toast.makeText(this, "uri: "+uri, Toast.LENGTH_SHORT)
+            Toast.makeText(getActivity(), "uri: "+uri, Toast.LENGTH_SHORT)
 			.show();
             System.out.println("++++++++uri:"+uri);
             Log.e("uri", uri.toString());  
-            ContentResolver cr = this.getContentResolver();  
+            ContentResolver cr = getActivity().getContentResolver();  
             try {  
                 Bitmap bitmap = BitmapFactory.decodeStream(cr.openInputStream(uri));  
 //                ImageView imageView = (ImageView) findViewById(R.id.iv01);  
@@ -202,13 +210,13 @@ public class RecordDetailActivity extends ActionBarActivity {
         }  
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		
-		getMenuInflater().inflate(R.menu.record_detail, menu);
-		return true;
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		// Inflate the menu; this adds items to the action bar if it is present.
+//		
+//		getMenuInflater().inflate(R.menu.record_detail, menu);
+//		return true;
+//	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -359,7 +367,7 @@ public class RecordDetailActivity extends ActionBarActivity {
 						  //holder_switch.Switch.setChecked(true);  
 					break;
 				 
-		          case TYPE_BUTTON:
+					case TYPE_BUTTON:
 					  holder_button.title.setText((String)mData.get(position).get("title"));
 					  holder_button.detail.setText((String)mData.get(position).get("detail"));
 					break;

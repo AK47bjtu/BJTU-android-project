@@ -15,6 +15,7 @@ import java.util.List;
 
 
 import android.app.Activity;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -82,6 +83,13 @@ public class MainActivity extends ActionBarActivity implements
      * 侧边栏列表选择事件
      * */
 	public void onSectionAttached(int number) {
+//		String mtitle[] = new String[3];
+//		mtitle[0] = getString(R.string.title_section1);
+//		mtitle[1] = getString(R.string.title_section2);
+//		mtitle[2] = getString(R.string.title_section3);
+//		
+//		Toast.makeText(this, mtitle[number - 1], Toast.LENGTH_SHORT)
+//		.show();
 		switch (number) {
 		case 1:
 			mTitle = getString(R.string.title_section1);
@@ -137,6 +145,9 @@ public class MainActivity extends ActionBarActivity implements
 			Intent intent = new Intent();
 			intent.setClass(MainActivity.this, RecordListActivity.class);
 			startActivity(intent);
+//			overridePendingTransition(R.anim.push_left_in,R.anim.push_right_out);
+//			ActivityOptions opts = ActivityOptions.makeCustomAnimation(MainActivity.this, R.anim.fade, R.anim.hold);
+//			startActivity(intent, opts.toBundle());
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -211,8 +222,8 @@ public class MainActivity extends ActionBarActivity implements
 					false);
 //			getWindow().setFormat(PixelFormat.TRANSLUCENT);// 让界面横屏
 //			requestWindowFeature(Window.FEATURE_NO_TITLE);// 去掉界面标题
-			getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-					WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//			getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			// 重新设置界面大小
 			init(rootView);
 			buttonpause.setEnabled(false);
@@ -625,12 +636,12 @@ public class MainActivity extends ActionBarActivity implements
 			super.onStop();
 		}
 
-		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			((MainActivity) activity).onSectionAttached(getArguments().getInt(
-					ARG_SECTION_NUMBER));
-		}
+//		@Override
+//		public void onAttach(Activity activity) {
+//			super.onAttach(activity);
+//			((MainActivity) activity).onSectionAttached(getArguments().getInt(
+//					ARG_SECTION_NUMBER));
+//		}
 		
 	}
 
