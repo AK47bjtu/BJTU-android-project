@@ -1360,10 +1360,10 @@ containing a value of this type.
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
         public static final int action_example=0x7f0b0013;
         public static final int action_fileList=0x7f0b0015;
-        public static final int action_forgot_password=0x7f0b0043;
+        public static final int action_forgot_password=0x7f0b0044;
         public static final int action_settings=0x7f0b0014;
-        public static final int action_sign_in_register=0x7f0b0041;
-        public static final int action_sign_in_short=0x7f0b0042;
+        public static final int action_sign_in_register=0x7f0b0042;
+        public static final int action_sign_in_short=0x7f0b0043;
         public static final int add=0x7f0b0037;
         public static final int app_name=0x7f0b000d;
         public static final int cancel=0x7f0b001d;
@@ -1374,10 +1374,11 @@ containing a value of this type.
         public static final int enter_file_name=0x7f0b0039;
         public static final int enter_password=0x7f0b003c;
         public static final int enter_user_name=0x7f0b003b;
-        public static final int error_field_required=0x7f0b0048;
-        public static final int error_incorrect_password=0x7f0b0047;
-        public static final int error_invalid_email=0x7f0b0045;
-        public static final int error_invalid_password=0x7f0b0046;
+        public static final int error_field_required=0x7f0b0049;
+        public static final int error_incorrect_password=0x7f0b0048;
+        public static final int error_invalid_email=0x7f0b0046;
+        public static final int error_invalid_password=0x7f0b0047;
+        public static final int file_synch=0x7f0b003f;
         public static final int filenotfind=0x7f0b002d;
         public static final int finish=0x7f0b0023;
         public static final int fix=0x7f0b0019;
@@ -1386,7 +1387,7 @@ containing a value of this type.
         public static final int list_preference_3ggp=0x7f0b0030;
         public static final int list_preference_amr=0x7f0b002f;
         public static final int log_in=0x7f0b003d;
-        public static final int login_progress_signing_in=0x7f0b0044;
+        public static final int login_progress_signing_in=0x7f0b0045;
         public static final int navigation_drawer_close=0x7f0b0012;
         public static final int navigation_drawer_open=0x7f0b0011;
         public static final int notarize=0x7f0b001c;
@@ -1395,8 +1396,8 @@ containing a value of this type.
         public static final int playbutton=0x7f0b002b;
         /**  Strings related to login 
          */
-        public static final int prompt_email=0x7f0b003f;
-        public static final int prompt_password=0x7f0b0040;
+        public static final int prompt_email=0x7f0b0040;
+        public static final int prompt_password=0x7f0b0041;
         public static final int resetbutton=0x7f0b0029;
         public static final int save=0x7f0b001a;
         public static final int setting=0x7f0b001b;

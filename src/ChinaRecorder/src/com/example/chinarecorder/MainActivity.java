@@ -11,10 +11,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.example.util.PreferenceNameHelp;
 
 
 
 
+
+import android.R.bool;
 import android.app.Activity;
 
 import android.support.v7.app.ActionBarActivity;
@@ -50,6 +53,10 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	public static String basePath = "/sdcard/chinarecord";
 	private NavigationDrawerFragment mNavigationDrawerFragment;
+	//定义SharedPreferences对象  
+    private static SharedPreferences sp;
+    private String  userName;
+    private boolean loginStatus;
 	
 	/**
 	 * Used to store the last screen title. For use in
@@ -61,7 +68,10 @@ public class MainActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		sp = PreferenceManager.getDefaultSharedPreferences(this);
+        userName = sp.getString(PreferenceNameHelp.USER_NAME, null);
+		loginStatus = sp.getBoolean(PreferenceNameHelp.LOGIN_STATUS, true);
+		
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -117,8 +127,13 @@ public class MainActivity extends ActionBarActivity implements
 	public void restoreActionBar() {//主界面标题显示改变
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionBar.setDisplayShowTitleEnabled(false);
-		actionBar.setTitle(mTitle);
+		if (loginStatus) {
+			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setTitle(userName);
+		}else {
+			actionBar.setDisplayShowTitleEnabled(false);
+		}
+		
 	}
 
 	@Override
@@ -146,6 +161,8 @@ public class MainActivity extends ActionBarActivity implements
 //			Toast.makeText(this, "file List2.", Toast.LENGTH_SHORT)
 //			.show();
 			Intent intent = new Intent();
+//			intent.putExtra(PreferenceNameHelp.LOGIN_STATUS, loginStatus);
+//			intent.putExtra(PreferenceNameHelp.USER_NAME, userName);
 			intent.setClass(MainActivity.this, RecordListActivity.class);
 			startActivity(intent);
 //			overridePendingTransition(R.anim.push_left_in,R.anim.push_right_out);
@@ -180,12 +197,11 @@ public class MainActivity extends ActionBarActivity implements
 	    /**临时文件计数**/
 		private static  int tempNO;
 		private static final String ARG_SECTION_NUMBER = "section_number";
-		//定义SharedPreferences对象  
-	    SharedPreferences sp;  
+		 
 	    //定义Preferences 文件中的键  
 	    public final String LATEST_DATE_KEY = "LATEST_DATE";
 	    public final String LATEST_NO_KEY = "LATEST_DATE_KEY";
-	    public final String FOMAT_SETTING_KEY = "FOMAT_SETTING";
+	    
 		
 		
 //		private String fileName;
@@ -425,7 +441,7 @@ public class MainActivity extends ActionBarActivity implements
 			private void initializeAudio() {
 				
 				sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-	            forMat = sp.getString(FOMAT_SETTING_KEY, null);
+	            forMat = sp.getString(PreferenceNameHelp.FOMAT_SETTING_KEY, null);
 				recorder = new MediaRecorder();// new出MediaRecorder对象
 				recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 				// 设置MediaRecorder的音频源为麦克风

@@ -13,13 +13,17 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -33,6 +37,7 @@ import android.widget.Toast;
 public class RecordListFragment extends ListFragment{
 	 final static String ARG_POSITION = "position";
 	 public static List<Recording> recordings = new ArrayList<Recording>() ;
+	 public static List<Recording> onlineRecordings = new ArrayList<Recording>() ;
 	 Context mContext;
 	 ImageButton editShare,editDelete;
 	 private ListView lv ;
@@ -225,6 +230,31 @@ public class RecordListFragment extends ListFragment{
 		
 	}
 	
+	
+	
+
+	/**
+	 * 
+	 * */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		
+		return super.onContextItemSelected(item);
+	}
+	/**
+	 * 
+	 * */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		menu.setHeaderTitle(R.string.file_synch);
+		
+		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+
+
+
+
 	/**
 	 * 列表持久化
 	 * */
@@ -296,6 +326,7 @@ public class RecordListFragment extends ListFragment{
 //			holder.pic.setBackgroundResource((Integer)recordings.get(position).get("img"));
 			holder.pic.setBackgroundResource(R.drawable.ic_tab_songs_unselected);
 			holder.name.setText(limitName(recordings.get(position).getRname())+"    ");
+			holder.name.setTextColor(Color.GREEN);
 			holder.time.setText(timeFormat1.format(recordings.get(position).getRdate())+"  "
 						+recordings.get(position).getRsize()+"KB");//+" "+recordings.get(position).getRsize()+"KB"
 			holder.viewBtn.setBackgroundResource(R.drawable.button_show_record_detail);
@@ -324,6 +355,10 @@ public class RecordListFragment extends ListFragment{
 			}
 			return str;
 		}
+		
+		
+		
+		
 		
 	}
 	

@@ -53,5 +53,7 @@
     <string name="enter_password">Enter password</string>
     <string name="log_in">Log in</string>
     <string name="sign_up">Sign up</string>
+    
+    <string name="file_synch">文件同步</string>
 
 </resources>

@@ -3,6 +3,8 @@ package com.example.chinarecorder;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
+import com.example.util.PreferenceNameHelp;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -67,7 +69,7 @@ public class NavigationDrawerFragment extends Fragment {
 //	private ListView mDrawerListView;
 	public static TextView userName;
 	public static boolean isLogined;
-	public static final String LOGIN_STATUS = "Login_Status";
+	
 	private View mFragmentContainerView;
 	
 	private static String  recordFormat;
@@ -353,7 +355,7 @@ public class NavigationDrawerFragment extends Fragment {
 		//定义SharedPreferences对象  
 		SharedPreferences sp;  
 		//定义Preferences 文件中的键  
-		public final String FOMAT_SETTING_KEY = "FOMAT_SETTING";
+		
 		 
 		 ListPreference listPreferenceFormat;
 		 PreferenceScreen preferenceScreenLogin;
@@ -367,7 +369,7 @@ public class NavigationDrawerFragment extends Fragment {
 	            listPreferenceFormat = (ListPreference) findPreference("list_preference_format");
 	            preferenceScreenLogin = (PreferenceScreen) findPreference("loginButton");
 	            sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-	            recordFormat = sp.getString(FOMAT_SETTING_KEY, null);
+	            recordFormat = sp.getString(PreferenceNameHelp.FOMAT_SETTING_KEY, null);
 	            if (recordFormat == null) {
 	            	recordFormat = listPreferenceFormat.getValue();
 	            	saveOrUpdateForMat();
@@ -423,7 +425,7 @@ public class NavigationDrawerFragment extends Fragment {
 				sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 				SharedPreferences.Editor editor = sp.edit();  
 		        //修改数据  
-		        editor.putString(FOMAT_SETTING_KEY, recordFormat);
+		        editor.putString(PreferenceNameHelp.FOMAT_SETTING_KEY, recordFormat);
 		        editor.commit();
 			}
 
@@ -439,11 +441,21 @@ public class NavigationDrawerFragment extends Fragment {
 					preferenceScreenLogin.setTitle("注销");
 					preferenceScreenLogin.setSummary("点击以注销");
 					userName.setText(data.getStringExtra("UserName"));
+					saveOrUpdateLoginStatus(isLogined,data.getStringExtra("UserName"));
 				}else {
 					
 				}
 				
 				super.onActivityResult(requestCode, resultCode, data);
+			}
+			
+			private void saveOrUpdateLoginStatus(boolean loginStatus,String userName){
+				sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+				SharedPreferences.Editor editor = sp.edit();  
+		        //修改数据  
+		        editor.putBoolean(PreferenceNameHelp.LOGIN_STATUS, loginStatus);
+		        editor.putString(PreferenceNameHelp.USER_NAME, userName);
+		        editor.commit();
 			}
 	        
 	    }
