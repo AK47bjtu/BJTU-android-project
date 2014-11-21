@@ -1,17 +1,26 @@
 package com.example.chinarecorder;
 
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+
 import android.support.v7.app.ActionBarActivity;
-import android.app.Activity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -36,7 +46,7 @@ public class NavigationDrawerFragment extends Fragment {
 	 * Remember the position of the selected item.
 	 */
 	private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-
+	public static Activity mainActivity;
 	/**
 	 * Per the design guidelines, you should show the drawer on launch until the
 	 * user manually expands it. This shared preference tracks this.
@@ -54,20 +64,25 @@ public class NavigationDrawerFragment extends Fragment {
 	private ActionBarDrawerToggle mDrawerToggle;
 
 	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerListView;
+//	private ListView mDrawerListView;
+	public static TextView userName;
+	public static boolean isLogined;
+	public static final String LOGIN_STATUS = "Login_Status";
 	private View mFragmentContainerView;
-
+	
+	private static String  recordFormat;
+	
 	private int mCurrentSelectedPosition = 0;
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
-
+	
 	public NavigationDrawerFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		mainActivity = getActivity();
 		// Read in the flag indicating whether or not the user has demonstrated
 		// awareness of the
 		// drawer. See PREF_USER_LEARNED_DRAWER for details.
@@ -101,6 +116,8 @@ public class NavigationDrawerFragment extends Fragment {
 		
 		View view= inflater.inflate(
 				R.layout.fragment_navigation_drawer, container, false);
+		userName = (TextView) view.findViewById(R.id.admintest);
+		
 //				this.getView().findViewById(R.id.leftlist);
 //		mDrawerListView = (ListView) view.findViewById(R.id.leftlist);
 //		mDrawerListView
@@ -217,9 +234,9 @@ public class NavigationDrawerFragment extends Fragment {
 
 	private void selectItem(int position) {
 		mCurrentSelectedPosition = position;
-		if (mDrawerListView != null) {
-			mDrawerListView.setItemChecked(position, true);
-		}
+//		if (mDrawerListView != null) {
+//			mDrawerListView.setItemChecked(position, true);
+//		}
 		if (mDrawerLayout != null) {
 			mDrawerLayout.closeDrawer(mFragmentContainerView);
 		}
@@ -326,17 +343,109 @@ public class NavigationDrawerFragment extends Fragment {
 		/**
 		 * Called when an item in the navigation drawer is selected.
 		 */
+		
 		void onNavigationDrawerItemSelected(int position);
 	}
 	
-	 public static class MyPrefsFragment extends PreferenceFragment {
+	 public static class MyPrefsFragment extends PreferenceFragment implements
+	 	OnPreferenceChangeListener,OnPreferenceClickListener{
 
+		//定义SharedPreferences对象  
+		SharedPreferences sp;  
+		//定义Preferences 文件中的键  
+		public final String FOMAT_SETTING_KEY = "FOMAT_SETTING";
+		 
+		 ListPreference listPreferenceFormat;
+		 PreferenceScreen preferenceScreenLogin;
+		 
 	        @Override
 	        public void onCreate(Bundle savedInstanceState) {
 	            super.onCreate(savedInstanceState);
 
-	            // Load the preferences from an XML resource
 	            addPreferencesFromResource(R.xml.preferences);
+	            
+	            listPreferenceFormat = (ListPreference) findPreference("list_preference_format");
+	            preferenceScreenLogin = (PreferenceScreen) findPreference("loginButton");
+	            sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+	            recordFormat = sp.getString(FOMAT_SETTING_KEY, null);
+	            if (recordFormat == null) {
+	            	recordFormat = listPreferenceFormat.getValue();
+	            	saveOrUpdateForMat();
+				}
+	            listPreferenceFormat.setTitle("录音格式："+listPreferenceFormat.getValue());
+	            
+	            listPreferenceFormat.setOnPreferenceChangeListener(this);
+	            listPreferenceFormat.setOnPreferenceClickListener(this);
+	            preferenceScreenLogin.setOnPreferenceClickListener(this);
+	            
+	            
 	        }
+
+	        
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				if (preference == preferenceScreenLogin) {
+//					Toast.makeText(getActivity(), "preferenceScreenLogin！", Toast.LENGTH_SHORT)
+//					.show();
+					if (!isLogined) {
+						Intent intent = new Intent();
+						intent.setClass(getActivity(), LoginActivity.class);
+						
+						startActivityForResult(intent, 1);
+					}else {
+						isLogined = false;
+						preferenceScreenLogin.setTitle(R.string.title_login_preferemce);
+						preferenceScreenLogin.setSummary(R.string.summary_login_preference);
+						userName.setText(R.string.unlogin);
+					}
+
+					return true;
+				}
+				return false;
+			}
+
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object objValue) {
+				if (preference == listPreferenceFormat) {
+					
+					recordFormat = objValue.toString();
+					listPreferenceFormat.setTitle("录音格式："+objValue.toString());
+					saveOrUpdateForMat(); 
+					return true;
+				}else {
+					return false;
+				}
+				
+			}
+			
+			private void saveOrUpdateForMat(){
+				sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+				SharedPreferences.Editor editor = sp.edit();  
+		        //修改数据  
+		        editor.putString(FOMAT_SETTING_KEY, recordFormat);
+		        editor.commit();
+			}
+
+			@Override
+			public void onActivityResult(int requestCode, int resultCode,
+					Intent data) {
+				if(data!=null){
+					isLogined = true;
+				}else {
+					isLogined = false;
+				}
+				if(isLogined){
+					preferenceScreenLogin.setTitle("注销");
+					preferenceScreenLogin.setSummary("点击以注销");
+					userName.setText(data.getStringExtra("UserName"));
+				}else {
+					
+				}
+				
+				super.onActivityResult(requestCode, resultCode, data);
+			}
+	        
 	    }
+	 
 }

@@ -1,5 +1,7 @@
 package com.example.chinarecorder;
 
+import com.example.util.FileDataUtil;
+
 import android.speech.RecognitionListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -20,6 +22,7 @@ public class RecordListActivity extends ActionBarActivity
 	public static int GOTODELETE = 2;
 	
 	private CharSequence rTitle;
+	FileDataUtil fileDataUtil;
 	
 	@Override
 	public void onEditSelected(int position) {
@@ -57,11 +60,15 @@ public class RecordListActivity extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_list);
+		fileDataUtil = new FileDataUtil(this);
+		fileDataUtil.scanDirAsync3(this, fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+		fileDataUtil.test();
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.listcontainer, new RecordListFragment()).commit();
 		}
 		rTitle = getTitle();
+		System.out.println(rTitle);
 	}
 
 	@Override
@@ -100,7 +107,9 @@ public class RecordListActivity extends ActionBarActivity
 		int id = item.getItemId();
 		
 		if (id == android.R.id.home) {
-			if(rTitle.equals(getString(R.string.detail))){
+			if(rTitle.equals(getString(R.string.detail))||
+					rTitle.equals(getString(R.string.delete))||
+					rTitle.equals(getString(R.string.share))){
 				getSupportFragmentManager().popBackStack();
 				rTitle = getString(R.string.title_record);
 				restoreActionBar();

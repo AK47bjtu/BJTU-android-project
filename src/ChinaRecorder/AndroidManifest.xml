@@ -12,7 +12,8 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme" 
+        android:name="UploadingFiles">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -41,18 +42,31 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.chinarecorder.RecordListActivity" />
         </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:logo="@drawable/home_app" >
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.chinarecorder.MainActivity" />
+        </activity>
     </application>
+
+    <!-- 往SDCard写入数据权限 -->
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- 录音权限 -->
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- 在SDCard中创建与删除文件权限 -->
+
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     
-    <!-- 往SDCard写入数据权限 -->  
+    <!-- 连接网络权限 -->
     
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />  
- 
-	<!-- 录音权限 -->  
-    
-	<uses-permission android:name="android.permission.RECORD_AUDIO" />  
-    
-	<!-- 在SDCard中创建与删除文件权限 -->  
-    
-	<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

@@ -22,6 +22,7 @@
     <string name="share">分享</string>
     <string name="start">开始</string>
     <string name="stop">暂停</string>
+    <string name="unlogin">未登录</string>
     <string name="finish">完成</string>
     <string name="detail">详细信息</string>
     <string name="person">个人中心</string>
@@ -31,7 +32,26 @@
     <string name="resetbutton">重播</string>
     <string name="pausebutton">暂停</string>
     <string name="playbutton">播放</string>
-    <string name="stopbutton">停止</string>  
-    <string name="filenotfind">文件没有找到</string> 
+    <string name="stopbutton">停止</string>
+    <string name="filenotfind">文件没有找到</string>
     <string name="continues">继续</string>
+    
+    <string name="list_preference_amr">amr</string>
+    <string name="list_preference_3ggp">3gpp</string>
+    <string name="summary_list_preference">点击以修改录音文件格式</string>
+    <string name="dialog_title_list_preferemce">选择录音文件格式</string>
+    <string name="title_user_category">用户</string>
+    <string name="title_login_preferemce">登录</string>
+    <string name="summary_login_preference">点击进行登录</string>
+    <string name="title_activity_login">LoginActivity</string>
+    
+    <string name="add">Add</string>
+    <string name="title">Title</string>
+    <string name="enter_file_name">Enter file name</string>
+    <string name="status">Status</string>
+    <string name="enter_user_name">Enter user name</string>
+    <string name="enter_password">Enter password</string>
+    <string name="log_in">Log in</string>
+    <string name="sign_up">Sign up</string>
+
 </resources>

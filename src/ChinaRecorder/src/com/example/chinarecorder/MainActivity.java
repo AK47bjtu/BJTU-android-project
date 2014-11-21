@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +26,8 @@ import android.content.SharedPreferences;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.ListPreference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -168,6 +171,8 @@ public class MainActivity extends ActionBarActivity implements
 	    private static boolean inThePause;
 	    /**是否停止录音**/  
 	    private static boolean isStopRecord;
+	    /**是否开始**/
+	    private static boolean isStarted;
 	    
 	    /**记录需要合成的几段amr语音文件**/  
 	    private static ArrayList<String> list; 
@@ -180,10 +185,11 @@ public class MainActivity extends ActionBarActivity implements
 	    //定义Preferences 文件中的键  
 	    public final String LATEST_DATE_KEY = "LATEST_DATE";
 	    public final String LATEST_NO_KEY = "LATEST_DATE_KEY";
+	    public final String FOMAT_SETTING_KEY = "FOMAT_SETTING";
 		
 		
 //		private String fileName;
-		private Button button_start;
+//		private Button button_start;
 		private Button button_stop;
 		private MediaRecorder recorder;
 		private Chronometer  chronometer;
@@ -199,6 +205,9 @@ public class MainActivity extends ActionBarActivity implements
 		private boolean sigle = false;  
 	    //定义Preferences 文件中的键  
 	
+//		private ListPreference listPreferenceFormat;
+		private String forMat;
+		
 		private static String recordFileName;
 		private static String tempFileName;
 		/**
@@ -226,7 +235,6 @@ public class MainActivity extends ActionBarActivity implements
 //					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			// 重新设置界面大小
 			init(rootView);
-			buttonpause.setEnabled(false);
 			button_stop.setEnabled(false);
 			return rootView;
 		}
@@ -239,12 +247,15 @@ public class MainActivity extends ActionBarActivity implements
 	        inThePause=false; 
 			//初始化list  
 	        list=new ArrayList<String>(); 
+	        //
+	        isStarted = false;
+	        
 	        
 			chronometer =(Chronometer)v.findViewById(R.id.chronometer);
-			button_start = (Button)v.findViewById(R.id.start);
+//			button_start = (Button)v.findViewById(R.id.start);
 			button_stop = (Button)v.findViewById(R.id.stop);
 			button_stop.setOnClickListener(new AudioListerner());
-			button_start.setOnClickListener(new AudioListerner());
+//			button_start.setOnClickListener(new AudioListerner());
 			buttonpause = (Button)v.findViewById(R.id.buttonpause);
 			buttonpause.setOnClickListener(new  AudioListerner()); 
 		}
@@ -252,21 +263,73 @@ public class MainActivity extends ActionBarActivity implements
 		class AudioListerner implements OnClickListener {
 			@Override
 			public void onClick(View v) {
-				if (v == button_start) {
-					tempNO = 0;
-					tempClock = 0;
-	                tempStartClock = 0;
-	                tempRestartClock = 0;
-					initializeAudio();
-					chronometer.setBase(SystemClock.elapsedRealtime());
-					chronometer.start();
-					tempStartClock = chronometer.getBase();
-//					System.out.println("StartClock:"+tempStartClock/1000);
-					buttonpause.setEnabled(true);
-					button_stop.setEnabled(true);
-					button_start.setEnabled(false);
-					isStopRecord = false;
-					
+//				if (v == button_start) {
+//					tempNO = 0;
+//					tempClock = 0;
+//	                tempStartClock = 0;
+//	                tempRestartClock = 0;
+//					initializeAudio();
+//					chronometer.setBase(SystemClock.elapsedRealtime());
+//					chronometer.start();
+//					tempStartClock = chronometer.getBase();
+////					System.out.println("StartClock:"+tempStartClock/1000);
+//					buttonpause.setEnabled(true);
+//					button_stop.setEnabled(true);
+//					button_start.setEnabled(false);
+//					isStopRecord = false;
+//					
+//				}
+				if (v == buttonpause) {
+	            	if(!isStarted){
+	            		tempNO = 0;
+						tempClock = 0;
+		                tempStartClock = 0;
+		                tempRestartClock = 0;
+						initializeAudio();
+						chronometer.setBase(SystemClock.elapsedRealtime());
+						chronometer.start();
+						tempStartClock = chronometer.getBase();
+//						System.out.println("StartClock:"+tempStartClock/1000);
+						buttonpause.setEnabled(true);
+						buttonpause.setText("暂停录音"); 
+						button_stop.setEnabled(true);
+//						button_start.setEnabled(false);
+						isStopRecord = false;
+						isStarted = true;
+	            	}else{
+	            		//已经暂停过了，再次点击按钮 开始录音，录音状态在录音中  
+			            if(inThePause){ 
+			            	chronometer.setBase(SystemClock.elapsedRealtime()-tempClock);
+			            	tempRestartClock = SystemClock.elapsedRealtime()-tempStartClock;
+//			            	System.out.println("SystemClockjx:"+SystemClock.elapsedRealtime()/1000);
+			            	chronometer.start();
+			                buttonpause.setText("暂停录音");
+			                button_stop.setEnabled(true);
+			                initializeAudio(); 
+			                inThePause=false;  
+			                  
+			                  
+			            }  
+			            //正在录音，点击暂停,现在录音状态为暂停  
+			            else{
+			            	tempClock = SystemClock.elapsedRealtime()-tempStartClock-(tempRestartClock-tempClock);
+//			            	System.out.println("SystemClockzt:"+SystemClock.elapsedRealtime()/1000);
+//			            	System.out.println("tempClock:"+tempClock/1000);
+			            	chronometer.stop();
+			                //当前正在录音的文件名，全程  
+			                list.add(myRecAudioFile.getPath());
+			                recodeStop(); 
+			                inThePause=true; 
+			                //start();  
+			                buttonpause.setText("继续录音");
+			                button_stop.setEnabled(true);
+			                  
+			                //计时停止  
+			//                timer.cancel();  
+			            }
+			            isPause=true;
+	            	} 
+	            	
 				}else if (v == button_stop) {
 					
 					setFileName();
@@ -277,9 +340,9 @@ public class MainActivity extends ActionBarActivity implements
 	                chronometer.setBase(SystemClock.elapsedRealtime());
 	    			chronometer.stop();
 	    			
-	    			button_start.setEnabled(true);
+//	    			button_start.setEnabled(true);
 	    			button_stop.setEnabled(false);
-	    			buttonpause.setEnabled(false); 
+//	    			buttonpause.setEnabled(); 
 	                  
 	                //这里写暂停处理的 文件！加上list里面 语音合成起来  
 	                if(isPause){  
@@ -298,7 +361,7 @@ public class MainActivity extends ActionBarActivity implements
 	                    //还原标志位  
 	                    isPause=false;  
 	                    inThePause=false;  
-	                    buttonpause.setText("暂停录音");  
+	                    buttonpause.setText("开始录音");  
 	                      
 	                  
 	                      
@@ -345,41 +408,10 @@ public class MainActivity extends ActionBarActivity implements
 	                saveLatestData(recordFileName);
 	                recordFileName = "";
 	                tempFileName = "";
+	                buttonpause.setText("开始录音");
+	                isStarted = false;
 	                
-	            }else if (v == buttonpause) {
-	            	  
-	            	
-	            	
-	                //已经暂停过了，再次点击按钮 开始录音，录音状态在录音中  
-		            if(inThePause){ 
-		            	chronometer.setBase(SystemClock.elapsedRealtime()-tempClock);
-		            	tempRestartClock = SystemClock.elapsedRealtime()-tempStartClock;
-//		            	System.out.println("SystemClockjx:"+SystemClock.elapsedRealtime()/1000);
-		            	chronometer.start();
-		                buttonpause.setText("暂停录音");  
-		                initializeAudio(); 
-		                inThePause=false;  
-		                  
-		                  
-		            }  
-		            //正在录音，点击暂停,现在录音状态为暂停  
-		            else{
-		            	tempClock = SystemClock.elapsedRealtime()-tempStartClock-(tempRestartClock-tempClock);
-//		            	System.out.println("SystemClockzt:"+SystemClock.elapsedRealtime()/1000);
-//		            	System.out.println("tempClock:"+tempClock/1000);
-		            	chronometer.stop();
-		                //当前正在录音的文件名，全程  
-		                list.add(myRecAudioFile.getPath());
-		                recodeStop(); 
-		                inThePause=true; 
-		                //start();  
-		                buttonpause.setText("继续录音");  
-		                  
-		                //计时停止  
-		//                timer.cancel();  
-		            }
-		            isPause=true;
-				}
+	            }
 			}
 			
 			 protected void recodeStop(){  
@@ -391,17 +423,28 @@ public class MainActivity extends ActionBarActivity implements
 			        }  
 			}  
 			private void initializeAudio() {
+				
+				sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+	            forMat = sp.getString(FOMAT_SETTING_KEY, null);
 				recorder = new MediaRecorder();// new出MediaRecorder对象
 				recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 				// 设置MediaRecorder的音频源为麦克风
-				recorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
-				// 设置MediaRecorder录制的音频格式
-				recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-				// 设置MediaRecorder录制音频的编码为amr.
+				if(forMat.equals("amr")){
+					recorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
+					// 设置MediaRecorder录制的音频格式
+					recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+					// 设置MediaRecorder录制音频的编码为amr.
+				}else if(forMat.equals("3gpp")){
+					recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+					// 设置MediaRecorder录制的音频格式
+					recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+					// 设置MediaRecorder录制音频的编码为amr.
+				}
+				
 //				recorder.setOutputFile("/sdcard/peipei.amr");
 				isExist(basePath);
 				setTempFileName();
-				myRecAudioFile=new File(basePath+"/"+tempFileName+".amr"); 
+				myRecAudioFile=new File(basePath+"/"+tempFileName+"."+forMat); 
 				recorder.setOutputFile(myRecAudioFile  
 	                    .getAbsolutePath());
 				// 设置录制好的音频文件保存路径
@@ -423,10 +466,15 @@ public class MainActivity extends ActionBarActivity implements
 			    
 			    String  mMinute1=getTime();  
 			    Toast.makeText(getActivity(), "当前时间是:"+mMinute1,Toast.LENGTH_LONG).show();  
-			      
+			    int head = 0;
 			    // 创建音频文件,合并的文件放这里  
-			    File file1=new File(basePath+"/"+recordFileName+".amr");  
-			    FileOutputStream fileOutputStream = null;  
+			    File file1=new File(basePath+"/"+recordFileName+"."+forMat);  
+			    FileOutputStream fileOutputStream = null; 
+			    if(forMat.equals("amr")){
+			    	head = 6;
+			    }else if (forMat.equals("3gpp")) {
+			    	head = 135;
+				}
 			       
 			    if(!file1.exists()){  
 			        try {  
@@ -468,7 +516,7 @@ public class MainActivity extends ActionBarActivity implements
 			            else{  
 			                while(fileInputStream.read(myByte)!=-1){  
 			                      
-			                    fileOutputStream.write(myByte, 6, length-6);  
+			                    fileOutputStream.write(myByte, head, length-head);  
 			                }  
 			            }  
 			              

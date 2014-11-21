@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-            android:key="next_screen_checkbox_preference"
-            android:title="@string/setting"
-            android:summary="@string/hello_world" />
+        xmlns:android="http://schemas.android.com/apk/res/android"
+       >
+     <PreferenceCategory
+         android:title="@string/title_user_category">
+	     <PreferenceScreen 
+	        android:title="@string/title_login_preferemce"
+	        android:summary="@string/summary_login_preference"
+	        android:key="loginButton"/>
+     </PreferenceCategory>
+     <PreferenceCategory
+        android:title="@string/setting"
+        >   
+	    <ListPreference 
+	        android:key="list_preference_format"
+	        android:title="@string/list_preference_amr"
+	        android:summary="@string/summary_list_preference"
+	        android:entryValues="@array/record_format"
+	        android:entries="@array/record_format"
+	        android:dialogTitle="@string/dialog_title_list_preferemce"/>
+	    
+	        
+	    
+	    
+    </PreferenceCategory>
 </PreferenceScreen>
 

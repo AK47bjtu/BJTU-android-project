@@ -108,6 +108,7 @@ public class PlayActivity extends ActionBarActivity {
 				}
 	        	
 	        });
+	        startPlay();
 	    }
 	    protected void onDestory() {
 	    	mediaPlayer.release();
@@ -133,28 +134,31 @@ public class PlayActivity extends ActionBarActivity {
 			}
 			super.onResume();
 		}
+		private void startPlay(){
+			File audio = new File(recordFile);
+	   		 System.out.println("path:"+audio);
+	   		 if(audio.exists()) {
+	   			 path = audio.getAbsolutePath();
+	   			 System.out.println("pipi");
+	   			 play(); 
+	   			 if(cd!=null) {
+	   				 rotecd.startAnimation(cd);
+	   			 }
+	   			 pause.setText(R.string.pausebutton);
+	   		 }
+	   		 else {
+	   			 path = null;
+	   			 Toast.makeText(getApplicationContext(), R.string.filenotfind, 2).show();
+	   			 pause.setText(R.string.pausebutton);
+	   		 }
+		}
 		public void mediaplayer(View v){
 	    	switch (v.getId()){
 	    	 case R.id.playbutton:
 //	    		 String filename = edi.getText().toString();
 	    		 /** BUG document add**/
 //	    		 File audio = new File(Environment.getExternalStorageDirectory()+"filerecord",filename);
-	    		 File audio = new File(recordFile);
-	    		 System.out.println("path:"+audio);
-	    		 if(audio.exists()) {
-	    			 path = audio.getAbsolutePath();
-	    			 System.out.println("pipi");
-	    			 play(); 
-	    			 if(cd!=null) {
-	    				 rotecd.startAnimation(cd);
-	    			 }
-	    			 pause.setText(R.string.pausebutton);
-	    		 }
-	    		 else {
-	    			 path = null;
-	    			 Toast.makeText(getApplicationContext(), R.string.filenotfind, 2).show();
-	    			 pause.setText(R.string.pausebutton);
-	    		 }
+	    		 startPlay();
 	    		 break;
 	    	  case R.id.pausebutton:    		  
 	    		  if(mediaPlayer.isPlaying()) {

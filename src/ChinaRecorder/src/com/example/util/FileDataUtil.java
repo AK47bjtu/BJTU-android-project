@@ -6,8 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.example.bean.Recording;
+import com.example.chinarecorder.RecordDetailFragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,6 +25,7 @@ import android.net.ParseException;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 public class FileDataUtil {
@@ -40,10 +44,11 @@ public class FileDataUtil {
 	/**
      * 文件删除
      * */
-    public void Delete_file(final List<Recording> recordings){
+    public void Delete_file(final List<Recording> recordings ,final Fragment fragment){
     	
        File file = new File(recordings.get(0).getRurl());   
-    	if (file.exists()) {  
+    	if (file.exists()) { 
+    	
     		new AlertDialog.Builder(  
                     activity)  
                     .setTitle("警告！")  
@@ -51,7 +56,6 @@ public class FileDataUtil {
                     .setPositiveButton(  
 	                        "确定",  
 	                        new DialogInterface.OnClickListener() {  
-	
 	                            @Override  
 	                            public void onClick(  
 	                                    DialogInterface dialog,  
@@ -62,7 +66,9 @@ public class FileDataUtil {
 	                            		new File(recordings.get(i).getRurl()).delete();
 	                            		deleteFileInData(recordings.get(i).getRid());
 //	                            		deleteFileInData(25482);
+	                            		scanDirAsync3(activity,basePath+"/"+recordDir);
 	                         		}
+	                            	fragment.getFragmentManager().popBackStack();
 	                            	 
 	                            }  
 	                        })  
@@ -74,11 +80,11 @@ public class FileDataUtil {
 		                        public void onClick(  
 		                                DialogInterface dialog,  
 		                                int which) {
-		                        	
+		                        	fragment.getFragmentManager().popBackStack();
 		                        }  
 		                    }).show(); 
     	 
-           }  
+          }  
     }
    
     public void deleteFileInData(int id) {
@@ -99,11 +105,11 @@ public class FileDataUtil {
     /**
      * 文件重命名
      * */
-    public void Rename_file(String oldPath ,final String newPath){
+    public void Rename_file(String oldPath ,final String newPath,final Fragment fragment){
 		final File file = new File(oldPath);
 		final File newFile = new File(newPath);
         // 判断文件是否存在   
-        if (new File(newPath).exists()) {  
+        if ((new File(newPath)).exists()) {  
             // 排除修改文件时没修改直接送出的情况
 
             if (!file.getName().equals(newFile.getName())) {  
@@ -124,7 +130,8 @@ public class FileDataUtil {
                                         // 单机确定，覆盖原来的文件   
                                         file.renameTo(newFile);  
                                         // 重新生成文件列表   
-                                         
+                                        fragment.getView().postInvalidate();
+//                                         System.out.println("rename");
                                     }  
                                 })  
                         .setNegativeButton(  
@@ -135,14 +142,16 @@ public class FileDataUtil {
                                     public void onClick(  
                                             DialogInterface dialog,  
                                             int which) {  
-                                        
+//                                        System.out.println("qx rename");
 
                                     }  
                                 }).show();  
             }  
         } else {  
             // 文件名不存在直接做修改动作   
-            file.renameTo(new File(newPath));    
+            file.renameTo(new File(newPath));
+            fragment.getView().postInvalidate();
+//            System.out.println("rename0 ");
         } 
     	
     	
@@ -179,6 +188,13 @@ public class FileDataUtil {
     public String getName(String str){
     	String temp = str.substring(0, str.indexOf("."));
     	return temp;
+    }
+    
+    public void test() {
+    	ContentResolver mResolver = activity.getContentResolver();   
+        Cursor cursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+        while (cursor.moveToNext()) {}
+        cursor.close();
     }
     
     /**
@@ -238,6 +254,7 @@ public class FileDataUtil {
                 	recording.setRsize(Float.valueOf(df.format(cursor.getFloat(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE))/1024)));
                 	recording.setRurl(url);
                 	recording.setRformat(getTypeName(url));
+                	
                 	recordings.add(recording);
                 }            
                 i++;
@@ -272,7 +289,7 @@ public class FileDataUtil {
 //                if(f.isFile()){//FILE TYPE
                     String name = f.getName();
 //                    System.out.println("++++++name:"+name);
-                    if(name.endsWith(".amr") || name.endsWith(".mp3") ){
+                    if(name.endsWith(".amr") || name.endsWith(".mp3") || name.endsWith(".3gpp") ){
 //                    	System.out.println("+++++++音频文件++++++");
                     	scanFileAsync(activity,f.getAbsolutePath());
                     }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.example.bean.Recording;
+import com.example.chinarecorder.RecordListFragment.RecoderAdapter;
 import com.example.util.FileDataUtil;
 
 import android.app.Activity;
@@ -41,7 +42,7 @@ public class RecordListEditFragment extends ListFragment{
 	 List<Integer> listItemID = new ArrayList<Integer>();
 	 FileDataUtil fileDataUtil;
 	 
-	 int position = -1;
+	 private static int position = -1;
 	 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
@@ -68,7 +69,8 @@ public class RecordListEditFragment extends ListFragment{
             @Override
             public void onClick(View v) {
             	clickCheckBoxList();
-            	getFragmentManager().popBackStack();
+//            	fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+//            	getFragmentManager().popBackStack();
             }
             
 		});
@@ -112,30 +114,34 @@ public class RecordListEditFragment extends ListFragment{
 	             AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
 	             builder2.setMessage(sb.toString());
 	             builder2.show();
+	             getFragmentManager().popBackStack();
 			} else if(position == 2){//删除
 				List<Recording> deleteRecordings = new ArrayList<Recording>();
 				for(int i=0;i<listItemID.size();i++){
 	                 deleteRecordings.add(editRecordings.get(listItemID.get(i)));
 	            }
-				fileDataUtil.Delete_file(deleteRecordings);
-				fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
+				fileDataUtil.Delete_file(deleteRecordings,this);
+//				fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
 				
 			}
              
          }
 	}
 	
+
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		 ListView lv;
+		initListView();
+		 
+	}
+	
+	private void initListView(){
+		ListView lv;
 		 lv =(ListView) this.getView().findViewById(android.R.id.list);
 //		 initRecording();
 	     adapter = new RecoderEditAdapter(editRecordings);
 		 lv.setAdapter(adapter);
-		
-		
 	}
 	
 
@@ -164,14 +170,14 @@ public class RecordListEditFragment extends ListFragment{
 	}
 
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		((RecordListActivity) activity).onSectionAttached(position);
-		
-//		((RecordListActivity) activity).myGetItem2(getArguments().getInt(
-//				"aa"));
-	}
+//	@Override
+//	public void onAttach(Activity activity) {
+//		super.onAttach(activity);
+//		((RecordListActivity) activity).onSectionAttached(position);
+//		
+////		((RecordListActivity) activity).myGetItem2(getArguments().getInt(
+////				"aa"));
+//	}
 
 
 
@@ -325,13 +331,19 @@ public class RecordListEditFragment extends ListFragment{
 			 SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 //			holder.pic.setBackgroundResource((Integer)recordings.get(position).get("img"));
 			holder.pic.setBackgroundResource(R.drawable.ic_tab_songs_unselected);//自定义图片
-			holder.name.setText(editRecordings.get(position).getRname()+"      ");
+			holder.name.setText(limitName(editRecordings.get(position).getRname())+"    ");
 			holder.time.setText(timeFormat1.format(editRecordings.get(position).getRdate())+"  "
 						+editRecordings.get(position).getRsize()+"KB");
 			holder.selected.setChecked(mChecked.get(position));
 			
 			
 			return view;
+		}
+		private String limitName(String str){
+			if(str.length()>16){
+				str = str.substring(0, 15)+"...";
+			}
+			return str;
 		}
 		
 	}

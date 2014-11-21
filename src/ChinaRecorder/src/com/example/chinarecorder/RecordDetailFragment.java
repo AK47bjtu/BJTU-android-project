@@ -24,6 +24,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,9 +48,12 @@ public class RecordDetailFragment extends ListFragment{
     private final int TYPE_BUTTON   = 1;
 //	private final int TYPE_SWITCH   = 2;
 //	private final int TYPE_SEEKBAR  = 3;
+    
+//    private static final int send_msg_initlist =  0x101;
 	Recording recording;
 	List<Map<String, Object>> mData = new ArrayList<Map<String, Object>>();
 	MyAdapter listAdapter ;
+	RecordDetailFragment detailFragment;
 	public FileDataUtil fileDataUtil ;
 	
 
@@ -60,18 +65,39 @@ public class RecordDetailFragment extends ListFragment{
 //			Intent intent = getActivity().getIntent();
 //			Bundle bundle = intent.getExtras();
 //		    int	i = bundle.getInt(RecordListFragment.ARG_POSITION);
+			detailFragment = this;
 			int i = getArguments().getInt(RecordListFragment.ARG_POSITION);
 		    recording = RecordListFragment.recordings.get(i);
 		    View view = inflater.inflate(
 					R.layout.fragment_record_detail, container, false);
-			
-			ListView lv = (ListView) view.findViewById(android.R.id.list);       
+		    ListView lv = (ListView)view.findViewById(android.R.id.list);       
 			initDetail();
 			
 			listAdapter = new MyAdapter(getActivity());
 			lv.setAdapter(listAdapter);
 		return view;
 	}
+	
+//	private void initList(){
+//		 ListView lv = (ListView)this.getView().findViewById(android.R.id.list);       
+//			initDetail();
+//			
+//			listAdapter = new MyAdapter(getActivity());
+//			lv.setAdapter(listAdapter);
+//		    
+//		
+//	}
+	
+	      
+//	 Handler handler = new Handler(){
+//          @Override
+//          public void handleMessage(Message msg){
+//                   int what = msg.what;
+//              if(what == send_msg_initlist){
+//            	  initList();    
+//              }
+//          }
+//     }; 
 	
 	/**
 	 * 初始化属性栏
@@ -108,10 +134,10 @@ public class RecordDetailFragment extends ListFragment{
 			map.put("detail", recording.getRurl());
 			mData.add(map);
 			
-			map = new HashMap<String, Object>();
-			map.put("title", "图片路径");
-			map.put("detail", recording.getRpic());
-			mData.add(map);
+//			map = new HashMap<String, Object>();
+//			map.put("title", "图片路径");
+//			map.put("detail", recording.getRpic());
+//			mData.add(map);
 	}
 	
 	/**
@@ -131,9 +157,10 @@ public class RecordDetailFragment extends ListFragment{
 		}
 		if(position == 0){
 			inputTitleDialog(value[0]);
-		}else if(position == 6){
-			changePic();
 		}
+//		else if(position == 6){
+//			changePic();
+//		}
 	}
 	/**
 	 * 弹出修改对话框
@@ -156,13 +183,12 @@ public class RecordDetailFragment extends ListFragment{
                         String inputName = inputServer.getText().toString();
                         fileDataUtil.deleteFileInData(recording.getRid());
                         System.out.println("tempFile:"+tempFile);
-                        fileDataUtil.Rename_file(tempFile+recording.getRname(), tempFile+inputName);
+                        fileDataUtil.Rename_file(tempFile+recording.getRname()+"."+recording.getRformat(), 
+                        		tempFile+inputName+"."+recording.getRformat(),detailFragment);
                         flushDataBase();
-                        Intent intent = new Intent();
-                		
-                		intent.setClass(builder.getContext(), RecordDetailFragment.class);
-                		
-                		startActivity(intent);
+                        detailFragment.getView().invalidate();
+//                        Intent intent = new Intent();
+//                		intent.setClass(builder.getContext(), RecordDetailFragment.class);
 //                        System.out.println(inputName);
                       /*************************************/  
                         
@@ -173,21 +199,19 @@ public class RecordDetailFragment extends ListFragment{
 	private void flushDataBase() {
 		fileDataUtil.scanDirAsync3(getActivity(), fileDataUtil.basePath+"/"+fileDataUtil.recordDir);
 	}
-	private void flushListView() {
-		
-	}
-	/**
-	 * 修改图片
-	 * */
-	private void changePic() {
-		Intent intent = new Intent();  
-        /* 开启Pictures画面Type设定为image */  
-        intent.setType("image/*");  
-        /* 使用Intent.ACTION_GET_CONTENT这个Action */  
-        intent.setAction(Intent.ACTION_GET_CONTENT);   
-        /* 取得相片后返回本画面 */  
-        startActivityForResult(intent, 1); 
-	}
+	
+//	/**
+//	 * 修改图片
+//	 * */
+//	private void changePic() {
+//		Intent intent = new Intent();  
+//        /* 开启Pictures画面Type设定为image */  
+//        intent.setType("image/*");  
+//        /* 使用Intent.ACTION_GET_CONTENT这个Action */  
+//        intent.setAction(Intent.ACTION_GET_CONTENT);   
+//        /* 取得相片后返回本画面 */  
+//        startActivityForResult(intent, 1); 
+//	}
 	
 	
 	@Override
@@ -260,7 +284,7 @@ public class RecordDetailFragment extends ListFragment{
 		     public int getItemViewType(int position) {
 			     // TODO Auto-generated method stub        	 
 			     
-			     if(position == 0||position == 6)
+			     if(position == 0)
 			         return TYPE_BUTTON;
 			     else
 			    	 return TYPE_DETAIL;

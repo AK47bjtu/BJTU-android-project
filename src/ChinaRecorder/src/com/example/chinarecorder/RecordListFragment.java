@@ -113,20 +113,20 @@ public class RecordListFragment extends ListFragment{
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		 ListView lv;
+		initListView();
+		 
+	}
+	
+	private void initListView(){
+		ListView lv;
 		 lv =(ListView) this.getView().findViewById(android.R.id.list);
 //		 initRecording();
 	     adapter = new RecoderAdapter(recordings);
 		 lv.setAdapter(adapter);
-		
-		
 	}
 	
-
-   
-
-
+	
+	
 	
 	@Override
 	public void onAttach(Activity activity) {
@@ -295,7 +295,7 @@ public class RecordListFragment extends ListFragment{
 			 SimpleDateFormat timeFormat1 = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 //			holder.pic.setBackgroundResource((Integer)recordings.get(position).get("img"));
 			holder.pic.setBackgroundResource(R.drawable.ic_tab_songs_unselected);
-			holder.name.setText(recordings.get(position).getRname()+"      ");
+			holder.name.setText(limitName(recordings.get(position).getRname())+"    ");
 			holder.time.setText(timeFormat1.format(recordings.get(position).getRdate())+"  "
 						+recordings.get(position).getRsize()+"KB");//+" "+recordings.get(position).getRsize()+"KB"
 			holder.viewBtn.setBackgroundResource(R.drawable.button_show_record_detail);
@@ -316,6 +316,13 @@ public class RecordListFragment extends ListFragment{
 			
 			
 			return convertView;
+		}
+		
+		private String limitName(String str){
+			if(str.length()>16){
+				str = str.substring(0, 15)+"...";
+			}
+			return str;
 		}
 		
 	}

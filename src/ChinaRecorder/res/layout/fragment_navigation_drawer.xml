@@ -4,8 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    
+    android:gravity="center_horizontal"
+    android:background="#cccc"
     tools:context="com.example.chinarecorder.NavigationDrawerFragment">
+    
+    
+    <TextView 
+        android:id="@+id/admintest"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/unlogin"
+	    android:textColor="#CC6699"
+	    android:textSize="20sp"
+        />
     <FrameLayout 
 	    android:id="@+id/prefercontainer"
 	    android:layout_width="wrap_content"
